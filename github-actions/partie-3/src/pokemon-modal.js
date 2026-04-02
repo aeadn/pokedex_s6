@@ -11,6 +11,7 @@ import {
 
 import {
     FRENCH_GAMES_NAME,
+    POKEDEX,
     cleanString,
     clearTagContent,
     replaceImage,
@@ -32,10 +33,33 @@ import {
 } from "#src/utils/pokemon-modal.utils.js"
 
 import modalPulldownClose from "#src/modal-pulldown-close.js"
+import WaveSurfer from "wavesurfer.js";
 
 import { listPokemon, setTitleTagForGeneration, hasReachPokedexEnd, rippleEffect } from "./main";
 import loadingImage from "/images/loading.svg";
 import loadingImageRaw from "/images/loading.svg?raw";
+
+// Fallback data for types when API fails
+const defaultTypesList = [
+    { name: "Acier", image: "https://raw.githubusercontent.com/Yarkis01/TyraDex/images/types/acier.png" },
+    { name: "Combat", image: "https://raw.githubusercontent.com/Yarkis01/TyraDex/images/types/combat.png" },
+    { name: "Dragon", image: "https://raw.githubusercontent.com/Yarkis01/TyraDex/images/types/dragon.png" },
+    { name: "Eau", image: "https://raw.githubusercontent.com/Yarkis01/TyraDex/images/types/eau.png" },
+    { name: "Électrik", image: "https://raw.githubusercontent.com/Yarkis01/TyraDex/images/types/electrik.png" },
+    { name: "Fée", image: "https://raw.githubusercontent.com/Yarkis01/TyraDex/images/types/fee.png" },
+    { name: "Feu", image: "https://raw.githubusercontent.com/Yarkis01/TyraDex/images/types/feu.png" },
+    { name: "Glace", image: "https://raw.githubusercontent.com/Yarkis01/TyraDex/images/types/glace.png" },
+    { name: "Insecte", image: "https://raw.githubusercontent.com/Yarkis01/TyraDex/images/types/insecte.png" },
+    { name: "Normal", image: "https://raw.githubusercontent.com/Yarkis01/TyraDex/images/types/normal.png" },
+    { name: "Plante", image: "https://raw.githubusercontent.com/Yarkis01/TyraDex/images/types/plante.png" },
+    { name: "Poison", image: "https://raw.githubusercontent.com/Yarkis01/TyraDex/images/types/poison.png" },
+    { name: "Psy", image: "https://raw.githubusercontent.com/Yarkis01/TyraDex/images/types/psy.png" },
+    { name: "Roche", image: "https://raw.githubusercontent.com/Yarkis01/TyraDex/images/types/roche.png" },
+    { name: "Sol", image: "https://raw.githubusercontent.com/Yarkis01/TyraDex/images/types/sol.png" },
+    { name: "Spectre", image: "https://raw.githubusercontent.com/Yarkis01/TyraDex/images/types/spectre.png" },
+    { name: "Ténèbres", image: "https://raw.githubusercontent.com/Yarkis01/TyraDex/images/types/tenebres.png" },
+    { name: "Vol", image: "https://raw.githubusercontent.com/Yarkis01/TyraDex/images/types/vol.png" }
+];
 
 const closeModalBtn = document.querySelector("[data-close-modal]");
 
@@ -69,14 +93,119 @@ const dataCache = {};
 let listAbilitiesCache = [];
 const initialPageTitle = document.title;
 
-let listTypes = await fetchAllTypes();
-listTypes = listTypes.map((item) => ({
-    sprite: item.sprites,
+const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+const faviconElement = document.querySelector('[data-favicon]');
+let previousThemeColor = themeColorMeta?.content;
+let previousFaviconHref = faviconElement?.href;
+let wavesurferInstance = null;
+
+const resetThemeAndFavicon = () => {
+    if (themeColorMeta && previousThemeColor) {
+        themeColorMeta.content = previousThemeColor;
+    }
+    if (faviconElement && previousFaviconHref) {
+        faviconElement.href = previousFaviconHref;
+    }
+};
+
+const getTCGDexCards = async (pokemonName) => {
+    const key = `tcgdex_${pokemonName.toLowerCase()}`;
+    if (dataCache[key]) return dataCache[key];
+
+    try {
+        const baseUrl = import.meta.env.DEV ? '/api/tcgdex' : 'https://tcgdex.dev';
+        const response = await fetch(`${baseUrl}/api/cards?name=${encodeURIComponent(pokemonName)}&lang=fr`);
+        if (!response.ok) return [];
+        const payload = await response.json();
+        const cards = payload?.data || payload || [];
+        dataCache[key] = cards;
+        return cards;
+    } catch (_error) {
+        return [];
+    }
+};
+
+const getCryUrl = (name) => {
+    return `https://play.pokemonshowdown.com/audio/cries/${name.toLowerCase().replace(/[^a-z0-9-]/g, "")}.ogg`;
+};
+
+const initWaveSurfer = (url) => {
+    if (!modal_DOM.waveForm || !modal_DOM.playCry) return;
+    if (wavesurferInstance) {
+        wavesurferInstance.destroy();
+        wavesurferInstance = null;
+    }
+
+    wavesurferInstance = WaveSurfer.create({
+        container: modal_DOM.waveForm,
+        waveColor: "#7dd3fc",
+        progressColor: "#0ea5e9",
+        height: 60,
+        responsive: true,
+    });
+
+    wavesurferInstance.load(url);
+
+    modal_DOM.playCry.onclick = () => {
+        if (!wavesurferInstance) return;
+        if (wavesurferInstance.isPlaying()) {
+            wavesurferInstance.pause();
+        } else {
+            wavesurferInstance.play();
+        }
+    };
+};
+
+// Liste de types par défaut en cas d'échec de l'API
+const defaultTypes = [
+    { name: { fr: "Normal", en: "Normal" }, sprites: { "32x32": "https://raw.githubusercontent.com/Yarkis01/TyraDex/images/types/normal.png" } },
+    { name: { fr: "Feu", en: "Fire" }, sprites: { "32x32": "https://raw.githubusercontent.com/Yarkis01/TyraDex/images/types/feu.png" } },
+    { name: { fr: "Eau", en: "Water" }, sprites: { "32x32": "https://raw.githubusercontent.com/Yarkis01/TyraDex/images/types/eau.png" } },
+    { name: { fr: "Plante", en: "Grass" }, sprites: { "32x32": "https://raw.githubusercontent.com/Yarkis01/TyraDex/images/types/plante.png" } },
+    { name: { fr: "Électrik", en: "Electric" }, sprites: { "32x32": "https://raw.githubusercontent.com/Yarkis01/TyraDex/images/types/electrik.png" } },
+    { name: { fr: "Glace", en: "Ice" }, sprites: { "32x32": "https://raw.githubusercontent.com/Yarkis01/TyraDex/images/types/glace.png" } },
+    { name: { fr: "Combat", en: "Fighting" }, sprites: { "32x32": "https://raw.githubusercontent.com/Yarkis01/TyraDex/images/types/combat.png" } },
+    { name: { fr: "Poison", en: "Poison" }, sprites: { "32x32": "https://raw.githubusercontent.com/Yarkis01/TyraDex/images/types/poison.png" } },
+    { name: { fr: "Sol", en: "Ground" }, sprites: { "32x32": "https://raw.githubusercontent.com/Yarkis01/TyraDex/images/types/sol.png" } },
+    { name: { fr: "Vol", en: "Flying" }, sprites: { "32x32": "https://raw.githubusercontent.com/Yarkis01/TyraDex/images/types/vol.png" } },
+    { name: { fr: "Psy", en: "Psychic" }, sprites: { "32x32": "https://raw.githubusercontent.com/Yarkis01/TyraDex/images/types/psy.png" } },
+    { name: { fr: "Insecte", en: "Bug" }, sprites: { "32x32": "https://raw.githubusercontent.com/Yarkis01/TyraDex/images/types/insecte.png" } },
+    { name: { fr: "Roche", en: "Rock" }, sprites: { "32x32": "https://raw.githubusercontent.com/Yarkis01/TyraDex/images/types/roche.png" } },
+    { name: { fr: "Spectre", en: "Ghost" }, sprites: { "32x32": "https://raw.githubusercontent.com/Yarkis01/TyraDex/images/types/spectre.png" } },
+    { name: { fr: "Dragon", en: "Dragon" }, sprites: { "32x32": "https://raw.githubusercontent.com/Yarkis01/TyraDex/images/types/dragon.png" } },
+    { name: { fr: "Ténèbres", en: "Dark" }, sprites: { "32x32": "https://raw.githubusercontent.com/Yarkis01/TyraDex/images/types/tenebres.png" } },
+    { name: { fr: "Acier", en: "Steel" }, sprites: { "32x32": "https://raw.githubusercontent.com/Yarkis01/TyraDex/images/types/acier.png" } },
+    { name: { fr: "Fée", en: "Fairy" }, sprites: { "32x32": "https://raw.githubusercontent.com/Yarkis01/TyraDex/images/types/fee.png" } }
+];
+
+let listTypes = defaultTypes.map((item) => ({
+    sprite: item.sprites["32x32"],
     name: {
         fr: cleanString(item.name.fr),
         en: cleanString(item.name.en)
     },
 }));
+
+// Charger les types depuis l'API de manière asynchrone
+const loadTypesAsync = async () => {
+    try {
+        const fetchedTypes = await fetchAllTypes();
+        if (fetchedTypes && fetchedTypes.length > 0) {
+            listTypes = fetchedTypes.map((item) => ({
+                sprite: item.sprites?.["32x32"] || item.sprites,
+                name: {
+                    fr: cleanString(item.name.fr),
+                    en: cleanString(item.name.en)
+                },
+            }));
+        }
+    } catch (error) {
+        console.warn("Impossible de charger les types depuis l'API, utilisation des types par défaut:", error.message);
+    }
+};
+
+// Charger les types au démarrage (sans bloquer)
+loadTypesAsync();
 
 export { listTypes }
 
@@ -120,6 +249,7 @@ modal.addEventListener("close", async (e) => {
     modal_DOM.img.src = loadingImage;
     modal_DOM.img.alt = "";
     setTitleTagForGeneration();
+    resetThemeAndFavicon();
 
     document.querySelectorAll(".selected").forEach((item) => {
         item.classList.remove("selected");
@@ -331,6 +461,30 @@ displayModal = async (pkmnData) => {
 
     modal_DOM.pkmnName.textContent = `#${String(pkmnData.pokedex_id).padStart(NB_NUMBER_INTEGERS_PKMN_ID, '0')} ${pkmnData.name.fr}`;
     document.title = `${modal_DOM.pkmnName.textContent} - ${initialPageTitle}`;
+
+    if (modal_DOM.foreignNames) {
+        modal_DOM.foreignNames.textContent = `EN: ${pkmnData.name.en || "-"} • JP: ${pkmnData.name.jp || "-"}`;
+    }
+
+    if (modal_DOM.pokepediaLink) {
+        const link = document.createElement("a");
+        link.href = `https://www.pokepedia.fr/${encodeURIComponent(pkmnData.name.fr)}`;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = "Voir la fiche sur poképedia.fr";
+        link.className = "text-blue-700 hover:underline";
+        modal_DOM.pokepediaLink.innerHTML = "";
+        modal_DOM.pokepediaLink.append(link);
+    }
+
+    if (themeColorMeta && pkmnData.types?.[0]) {
+        const themeColor = window.getComputedStyle(document.body).getPropertyValue(`--type-${cleanString(pkmnData.types[0].name)}`) || "#0f172a";
+        themeColorMeta.content = themeColor;
+    }
+
+    if (faviconElement && pkmnData.sprites?.regular) {
+        faviconElement.href = pkmnData.sprites.regular;
+    }
 
     if (listDescriptions?.is_legendary || listDescriptions?.is_mythical) {
         const cloneHighlight = document.importNode(
@@ -722,6 +876,57 @@ displayModal = async (pkmnData) => {
     });
     modal_DOM.nbGames.textContent = ` (${listGames.length})`;
     modal_DOM.listGames.closest("details").inert = listGames.length === 0;
+
+    if (modal_DOM.listRegionalPokedex && pkmnExtraData.pokedex_numbers?.length) {
+        clearTagContent(modal_DOM.listRegionalPokedex);
+        pkmnExtraData.pokedex_numbers.forEach((pokedexEntry) => {
+            const li = document.createElement("li");
+            const regionName = POKEDEX[pokedexEntry.pokedex.name] || pokedexEntry.pokedex.name;
+            li.textContent = `${regionName} : ${pokedexEntry.entry_number}`;
+            modal_DOM.listRegionalPokedex.append(li);
+        });
+        modal_DOM.pokedexNumbersSection.inert = false;
+    } else if (modal_DOM.pokedexNumbersSection) {
+        modal_DOM.pokedexNumbersSection.inert = true;
+    }
+
+    const tcgCards = await getTCGDexCards(pkmnData.name.en || pkmnData.name.fr);
+    if (modal_DOM.tcgCardsContainer && modal_DOM.tcgCardsSection) {
+        clearTagContent(modal_DOM.tcgCardsContainer);
+        if (tcgCards.length) {
+            tcgCards.slice(0, 6).forEach((card) => {
+                const cardItem = document.createElement("a");
+                cardItem.href = card.url || "#";
+                cardItem.target = "_blank";
+                cardItem.rel = "noopener noreferrer";
+                cardItem.className = "block rounded-md border border-slate-300 overflow-hidden p-1 bg-white";
+
+                const img = document.createElement("img");
+                img.src = card.images?.small || card.imageUrl || "";
+                img.alt = card.name || "Carte Pokémon";
+                img.className = "w-full h-28 object-cover";
+
+                const label = document.createElement("p");
+                label.textContent = card.name || "Carte";
+                label.className = "text-xs text-slate-700 mt-1 truncate";
+
+                cardItem.append(img, label);
+                modal_DOM.tcgCardsContainer.append(cardItem);
+
+                cardItem.addEventListener("click", (event) => {
+                    event.stopPropagation();
+                });
+            });
+            modal_DOM.tcgCardsSection.inert = false;
+        } else {
+            modal_DOM.tcgCardsSection.inert = true;
+        }
+    }
+
+    const cryUrl = getCryUrl(pkmnData.name.en || pkmnData.name.fr);
+    if (cryUrl && modal_DOM.crySection) {
+        initWaveSurfer(cryUrl);
+    }
 
     const listRegions = ["alola", "hisui", "galar", "paldea"];
     let listNonRegionalForms = listDescriptions.varieties?.filter((item) => !item.is_default && !listRegions.some((region) => item.pokemon.name.includes(region))) || []

@@ -14,6 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+const FULL_CIRCLE_RADIANS = 2 * Math.PI;
+
 // Example : https://houdini.glitch.me/paint
 if (typeof registerPaint !== "undefined") {
     registerPaint(
@@ -62,7 +64,7 @@ if (typeof registerPaint !== "undefined") {
                     y,
                     (geom.width * tick) / speed, // radius
                     0, // startAngle
-                    2 * Math.PI // endAngle
+                    FULL_CIRCLE_RADIANS // endAngle
                 );
 
                 ctx.fill();

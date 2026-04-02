@@ -17,21 +17,39 @@ export default defineConfig({
             failOnError: false,
         }),
     ],
-    build: {
-        target: "esnext",
-        rollupOptions: {
-            input: ["src/index.html"],
-        },
-    },
-    define: {
-        "import.meta.env.VERSION": JSON.stringify(
-            process.env.npm_package_version
-        ),
-    },
     server: {
         // Expose the server to the network allowing access from ip address
         host: true,
         open: true,
+        proxy: {
+            '/api/tyradex': {
+                target: 'https://tyradex.vercel.app',
+                changeOrigin: true,
+                rewrite: (path) => path.replace(/^\/api\/tyradex/, ''),
+            },
+            '/api/github': {
+                target: 'https://api.github.com',
+                changeOrigin: true,
+                rewrite: (path) => path.replace(/^\/api\/github/, ''),
+            },
+            '/api/tcgdex': {
+                target: 'https://api.tcgdex.net',
+                changeOrigin: true,
+                rewrite: (path) => path.replace(/^\/api\/tcgdex/, ''),
+            },
+        },
+    },
+    build: {
+                target: 'https://api.github.com',
+                changeOrigin: true,
+                rewrite: (path) => path.replace(/^\/api\/github/, ''),
+            },
+            '/api/tcgdex': {
+                target: 'https://tcgdex.dev',
+                changeOrigin: true,
+                rewrite: (path) => path.replace(/^\/api\/tcgdex/, ''),
+            }
+        }
     },
     test: {
         exclude: [

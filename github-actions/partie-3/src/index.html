@@ -30,6 +30,12 @@
                 </div>
             </div>
         </header>
+
+        <section class="mx-auto max-w-6xl p-4">
+            <h2 class="text-lg font-bold">Contributeurs GitHub</h2>
+            <ul data-github-contributors class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2"></ul>
+        </section>
+
         <main>
             <div class="fixed right-[max(env(safe-area-inset-right),_theme(space.3))] top-1/2 -translate-y-1/2 flex" style="z-index:  9999;">
                 <ul class="text-sm py-3 px-2 bg-slate-50 rounded-3xl opacity-0 hidden transition-opacity border border-red-600 border-solid flex-col gap-y-1.5" data-generation-shortcut></ul>
@@ -56,6 +62,35 @@
             <p>Mode picture-in-picture activé</p>
         </div>
         <footer class="pr-[max(env(safe-area-inset-right),_theme(space.2))] pl-[max(env(safe-area-inset-left),_theme(space.2))]">
+            <div class="mx-auto max-w-6xl py-4 border-t border-slate-300">
+                <div class="text-center text-sm text-slate-600 space-y-2">
+                    <p><strong>Université BUT MMI</strong> - Année universitaire 2025-2026</p>
+
+                    <div class="space-y-1">
+                        <p class="font-semibold">APIs utilisées :</p>
+                        <ul class="space-y-1">
+                            <li><a href="https://tyradex.vercel.app/" target="_blank" rel="noopener noreferrer" class="hover:underline">Tyradex</a> - Données principales des Pokémon</li>
+                            <li><a href="https://pokeapi.co/" target="_blank" rel="noopener noreferrer" class="hover:underline">PokeAPI</a> - Données supplémentaires et sprites</li>
+                            <li><a href="https://tcgdex.dev/" target="_blank" rel="noopener noreferrer" class="hover:underline">TCGdex</a> - Cartes Pokémon françaises</li>
+                        </ul>
+                    </div>
+
+                    <div class="space-y-1">
+                        <p class="font-semibold">Icônes :</p>
+                        <ul class="space-y-1">
+                            <li><a href="https://github.com/partywhale/pokemon-type-icons" target="_blank" rel="noopener noreferrer" class="hover:underline">Pokemon Type Icons</a> - Icônes des types</li>
+                        </ul>
+                    </div>
+
+                    <div class="space-y-1">
+                        <p class="font-semibold">Librairies :</p>
+                        <ul class="space-y-1">
+                            <li><a href="https://wavesurfer-js.org/" target="_blank" rel="noopener noreferrer" class="hover:underline">WaveSurfer.js</a> - Spectre audio des cris</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
             <button
                 data-testid="load-generation-btn"
                 data-load-generation
@@ -88,6 +123,7 @@
                         <div class="absolute overflow-hidden inset-0 opacity-0 transition-opacity group-[.selected]:opacity-100 group-hocus:opacity-100 @xs:hidden h-fit" data-marquee></div>
                         <img src="/images/loading.svg" loading="lazy" alt="" class="@xs:max-w-20 group-[.selected]:scale-85 group-hocus:scale-85 transition-transform" />
                         <p data-pkmn-name class="group-hocus:pkmn-name group-[.selected]:pkmn-name @xs:text-left text-center whitespace-pre w-full"></p>
+                        <ul data-pkmn-types class="mt-1 flex flex-wrap gap-1 hidden"></ul>
                     </div>
                 </a>
             </li>
@@ -230,6 +266,8 @@
                         <div class="grow">
                             <h2 class="text-2xl font-bold"></h2>
                             <p data-category class="text-sm -mt-1"></p>
+                            <p data-foreign-names class="text-xs mt-1 text-slate-600"></p>
+                            <p data-pokepedia-link class="text-xs mt-1"></p>
                             <div class="@container">
                                 <ul data-list-types class="flex gap-1 mt-2 flex-col @[10rem]:flex-row"></ul>
                             </div>
@@ -373,6 +411,21 @@
                         class="columns-1 sm:columns-2 md:columns-3 list-inside list-disc"
                         data-list-games=""
                     ></ul>
+                </details>
+                <details class="mt-3" data-pokedex-numbers-section>
+                    <summary class="hocus:marker:text-(color:--bg-modal-color) font-bold text-xl">Numéros de Pokédex</summary>
+                    <ul data-list-regional-pokedex class="list-disc pl-5 mt-2"></ul>
+                </details>
+                <details class="mt-3" data-tcg-cards-section>
+                    <summary class="hocus:marker:text-(color:--bg-modal-color) font-bold text-xl">Cartes TC GDEX</summary>
+                    <div data-tcg-cards-container class="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2"></div>
+                </details>
+                <details class="mt-3" data-cry-section>
+                    <summary class="hocus:marker:text-(color:--bg-modal-color) font-bold text-xl">Cri & spectre acoustique</summary>
+                    <div data-cry-player class="mt-2 space-y-2">
+                        <div data-waveform class="h-20 bg-slate-100 rounded"></div>
+                        <button data-play-cry type="button" class="rounded-md bg-slate-800 text-white px-3 py-2">Rejouer cri</button>
+                    </div>
                 </details>
             </div>
             <nav class="text-black">
