@@ -225,6 +225,8 @@ export const modal_DOM = {
     listRegionalForms: modal?.querySelector?.("[data-list-regional-forms]") || null,
     nbForms: modal?.querySelector?.("[data-nb-forms]") || null,
     listForms: modal?.querySelector?.("[data-list-forms]") || null,
+    foreignNames: modal?.querySelector?.("[data-foreign-names]") || null,
+    pokepediaLink: modal?.querySelector?.("[data-pokepedia-link]") || null,
     spritesContainer: modal?.querySelector?.("[data-sprites-container]") || null,
     topInfos: modal?.querySelector?.("[data-top-infos]") || null,
     listSiblings: modal?.querySelector?.("[data-list-siblings-pokemon]") || null,
