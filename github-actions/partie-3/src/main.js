@@ -36,12 +36,61 @@ const marqueeTypeTextTemplateRaw = document.querySelector("[data-tpl-id='marquee
 const marqueeTypeContainerTemplateRaw = document.querySelector("[data-tpl-id='marquee-type-container']");
 
 const pokedexContainer = document.querySelector("[data-list-pokedex]");
+const githubContributorsList = document.querySelector("[data-github-contributors]");
 
 const errorPopover = document.querySelector("[data-error-popover]");
 const errorMessageContainer = errorPopover.querySelector("[data-error-message]");
 
 const modal = document.querySelector("[data-pokemon-modal]");
 const generationShortcut = document.querySelector("[data-generation-shortcut]");
+
+const loadGithubContributors = async () => {
+    if (!githubContributorsList) {
+        return;
+    }
+
+    const githubRepo = import.meta.env.VITE_GITHUB_REPO;
+    if (!githubRepo || githubRepo.includes("OWNER/REPOSITORY")) {
+        return;
+    }
+
+    const baseUrl = import.meta.env.DEV ? "/api/github" : "https://api.github.com";
+    const headers = {};
+
+    if (import.meta.env.VITE_GITHUB_TOKEN) {
+        headers.Authorization = `token ${import.meta.env.VITE_GITHUB_TOKEN}`;
+    }
+
+    try {
+        const response = await fetch(`${baseUrl}/repos/${githubRepo}/contributors?per_page=12`, {
+            headers,
+        });
+
+        if (!response.ok) {
+            throw new Error(`GitHub API error ${response.status}`);
+        }
+
+        const contributors = await response.json();
+        if (!Array.isArray(contributors) || contributors.length === 0) {
+            return;
+        }
+
+        githubContributorsList.innerHTML = "";
+        contributors.forEach((contributor) => {
+            const li = document.createElement("li");
+            li.className = "flex items-center gap-2 rounded-md p-2 bg-slate-100";
+            li.innerHTML = `
+                <a href="${contributor.html_url}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2">
+                    <img src="${contributor.avatar_url}" alt="${contributor.login}" class="w-8 h-8 rounded-full border border-slate-300" />
+                    <span class="text-sm font-medium">${contributor.login}</span>
+                </a>
+            `;
+            githubContributorsList.append(li);
+        });
+    } catch (error) {
+        console.warn("Impossible de charger les contributeurs GitHub", error);
+    }
+};
 
 let isGridLayout = localStorage.getItem("is_grid_layout") ? JSON.parse(localStorage.getItem("is_grid_layout")) === true : true;
 const initialPageTitle = document.title;
@@ -213,7 +262,7 @@ const loadPokedexForGeneration = async (generation = 1, triggerElement) => {
         const pokedex = cloneDex.querySelector("[data-pokedex]");
 
         const layoutSwitch = cloneDex.querySelector("[data-layout-switch]")
-        layoutSwitch.checked = JSON.parse(localStorage.getItem("is_grid_layout") === true);
+        layoutSwitch.checked = JSON.parse(localStorage.getItem("is_grid_layout")) === true;
 
         const generationNumber = cloneDex.querySelector(
             "[data-generation-number]"
@@ -411,6 +460,7 @@ export { loadPokedexForGeneration };
 
 await observeURL();
 await loadPokedexForGeneration(1);
+await loadGithubContributors();
 
 if (pkmnId !== null) {
     const $itemInList = document.querySelector(`[data-pokemon-id="${pkmnId}"]`);

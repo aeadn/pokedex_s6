@@ -23,7 +23,7 @@ export default defineConfig({
         open: true,
         proxy: {
             '/api/tyradex': {
-                target: 'https://tyradex.vercel.app',
+                target: 'https://tyradex.app',
                 changeOrigin: true,
                 rewrite: (path) => path.replace(/^\/api\/tyradex/, ''),
             },
@@ -40,16 +40,7 @@ export default defineConfig({
         },
     },
     build: {
-                target: 'https://api.github.com',
-                changeOrigin: true,
-                rewrite: (path) => path.replace(/^\/api\/github/, ''),
-            },
-            '/api/tcgdex': {
-                target: 'https://tcgdex.dev',
-                changeOrigin: true,
-                rewrite: (path) => path.replace(/^\/api\/tcgdex/, ''),
-            }
-        }
+        // Production build configuration can be customized here if needed.
     },
     test: {
         exclude: [

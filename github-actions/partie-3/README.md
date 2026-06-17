@@ -71,7 +71,7 @@ VITE_GITHUB_REPO=votre-username/votre-repo
 ### Crédits et ressources externes
 
 #### APIs utilisées
-- **Tyradex** (https://tyradex.vercel.app/) - Données principales des Pokémon
+- **Tyradex** (https://tyradex.app/) - Données principales des Pokémon
 - **PokeAPI** (https://pokeapi.co/) - Données supplémentaires et sprites
 - **TCGdex** (https://tcgdex.dev/) - Cartes Pokémon françaises
 
