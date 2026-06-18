@@ -325,7 +325,29 @@ const loadPokedexForGeneration = async (generation = 1, triggerElement) => {
 
             const pkmnNameContainer = clone.querySelector("[data-pkmn-name]")
             pkmnNameContainer.textContent = `#${String(item.pokedex_id).padStart(NB_NUMBER_INTEGERS_PKMN_ID, '0')}\n${item.name.fr}`;
+            // Types du Pokémon
+                const pkmnTypesContainer = clone.querySelector("[data-pkmn-types]");
 
+                item.types.forEach((type, index) => {
+                    const typeElement = document.createElement("li");
+
+                    typeElement.textContent = type.name;
+                    typeElement.setAttribute("aria-label", `Type ${index + 1} ${type.name}`);
+
+                    typeElement.classList.add(
+                        "type-name",
+                        "w-fit",
+                        "rounded-md",
+                        "px-2",
+                        "py-0.5"
+                    );
+
+                    // Couleur selon le type
+                    typeElement.style.backgroundColor =
+                        `var(--type-${cleanString(type.name)})`;
+
+                    pkmnTypesContainer.append(typeElement);
+                });
             const aTag = clone.querySelector("[data-pokemon-data]");
             aTag.href = url;
             aTag.style.scrollMargin = `${headerPokedex.offsetHeight}px`;

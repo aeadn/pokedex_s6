@@ -325,11 +325,23 @@ dialog {
     }
 }
 
-.type-name {
-    font-weight: bold;
-    color: var(--color-slate-50);
-    text-shadow: 1px 1px 2px black, 0 0 15em black, 0 0 0.1em black;
-}
+        .type-name {
+            font-weight: bold;
+            color: var(--color-slate-50);
+            text-shadow: 1px 1px 2px black, 0 0 15em black, 0 0 0.1em black;
+        }
+
+        /* Types cachés par défaut */
+        .pokemon-types {
+            display: none;
+        }
+
+        /* Types visibles en mode liste grâce aux container queries */
+        @container pokemon (width >= theme(--container-xs)) {
+            .pokemon-types {
+                display: flex;
+            }
+        }
 
 details {
     --animation-speed: 0.3s;
