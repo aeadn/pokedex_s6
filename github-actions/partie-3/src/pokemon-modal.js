@@ -110,18 +110,54 @@ const resetThemeAndFavicon = () => {
 
 const getTCGDexCards = async (pokemonName) => {
     const key = `tcgdex_${pokemonName.toLowerCase()}`;
-    if (dataCache[key]) return dataCache[key];
+    if (key in dataCache) return dataCache[key];
 
     try {
-        const baseUrl = import.meta.env.DEV ? '/api/tcgdex' : 'https://tcgdex.dev';
-        const response = await fetch(`${baseUrl}/api/cards?name=${encodeURIComponent(pokemonName)}&lang=fr`);
-        if (!response.ok) return [];
+        const baseUrl = import.meta.env.DEV
+            ? "/api/tcgdex"
+            : "https://api.tcgdex.net";
+        // Recherche des cartes françaises du Pokémon
+        const response = await fetch(
+            `${baseUrl}/v2/fr/cards?name=${encodeURIComponent(pokemonName)}`
+        );
+        if (!response.ok) {
+            dataCache[key] = [];
+            return dataCache[key];
+        }
         const payload = await response.json();
         const cards = payload?.data || payload || [];
         dataCache[key] = cards;
         return cards;
     } catch (_error) {
-        return [];
+        dataCache[key] = [];
+        return dataCache[key];
+    }
+};
+// Détails d'une carte TCGDex
+const getTCGDexCardDetails = async (cardId) => {
+    const key = `tcgdex_card_${cardId}`;
+
+    // Cache
+    if (key in dataCache) return dataCache[key];
+
+    try {
+        const baseUrl = import.meta.env.DEV
+            ? "/api/tcgdex"
+            : "https://api.tcgdex.net";
+
+        const response = await fetch(
+            `${baseUrl}/v2/fr/cards/${encodeURIComponent(cardId)}`
+        );
+
+        if (!response.ok) return null;
+
+        const card = await response.json();
+
+        dataCache[key] = card;
+
+        return card;
+    } catch (_error) {
+        return null;
     }
 };
 
@@ -148,11 +184,10 @@ const initWaveSurfer = (url) => {
 
     modal_DOM.playCry.onclick = () => {
         if (!wavesurferInstance) return;
-        if (wavesurferInstance.isPlaying()) {
-            wavesurferInstance.pause();
-        } else {
-            wavesurferInstance.play();
-        }
+
+        // Rejoue le cri depuis le début
+        wavesurferInstance.stop();
+        wavesurferInstance.play();
     };
 };
 
@@ -899,42 +934,86 @@ displayModal = async (pkmnData) => {
             pokedexNumbers.length === 0;
     }
 
-    const tcgCards = await getTCGDexCards(pkmnData.name.en || pkmnData.name.fr);
+    // Recherche avec le nom français pour obtenir les cartes FR
+    const tcgCards = await getTCGDexCards(pkmnData.name.fr);
+    const cardsWithImages = tcgCards.filter((card) => card.image);
+
     if (modal_DOM.tcgCardsContainer && modal_DOM.tcgCardsSection) {
         clearTagContent(modal_DOM.tcgCardsContainer);
-        if (tcgCards.length) {
-            tcgCards.slice(0, 6).forEach((card) => {
-                const cardItem = document.createElement("a");
-                cardItem.href = card.url || "#";
-                cardItem.target = "_blank";
-                cardItem.rel = "noopener noreferrer";
-                cardItem.className = "block rounded-md border border-slate-300 overflow-hidden p-1 bg-white";
 
-                const img = document.createElement("img");
-                img.src = card.images?.small || card.imageUrl || "";
-                img.alt = card.name || "Carte Pokémon";
-                img.className = "w-full h-28 object-cover";
+        // Cache les anciens détails
+        if (modal_DOM.tcgCardDetails) {
+            modal_DOM.tcgCardDetails.hidden = true;
+        }
 
-                const label = document.createElement("p");
-                label.textContent = card.name || "Carte";
-                label.className = "text-xs text-slate-700 mt-1 truncate";
+        cardsWithImages.slice(0, 6).forEach((card) => {
+            // Carte cliquable
+            const cardItem = document.createElement("button");
+            cardItem.type = "button";
+            cardItem.className = "block rounded-md border border-slate-300 overflow-hidden p-1 bg-white";
 
-                cardItem.append(img, label);
-                modal_DOM.tcgCardsContainer.append(cardItem);
+            const img = document.createElement("img");
+            // Image de la carte TCGDex
+            img.src = card.image ? `${card.image}/low.webp` : "";
+            img.alt = card.name || "Carte Pokémon";
+            img.className = "w-full h-28 object-cover";
 
-                cardItem.addEventListener("click", (event) => {
-                    event.stopPropagation();
+            const label = document.createElement("p");
+            label.textContent = card.name || "Carte";
+            label.className = "text-xs text-slate-700 mt-1 truncate";
+
+            cardItem.append(img, label);
+            modal_DOM.tcgCardsContainer.append(cardItem);
+
+            cardItem.addEventListener("click", async (event) => {
+                event.stopPropagation();
+
+                const cardDetails = await getTCGDexCardDetails(card.id);
+
+                if (!cardDetails || !modal_DOM.tcgCardDetails) return;
+
+                // Affiche la carte choisie
+                modal_DOM.tcgCardDetails.hidden = false;
+                modal_DOM.tcgDetailImage.src = `${cardDetails.image}/low.webp`;
+                modal_DOM.tcgDetailImage.alt = cardDetails.name || "Carte Pokémon";
+                modal_DOM.tcgDetailName.textContent = cardDetails.name || "Carte Pokémon";
+
+                clearTagContent(modal_DOM.tcgDetailInfos);
+                clearTagContent(modal_DOM.tcgDetailAttacks);
+
+                const setInfo = document.createElement("p");
+                setInfo.textContent = `Extension : ${cardDetails.set?.name || "Inconnue"}`;
+
+                const rarityInfo = document.createElement("p");
+                rarityInfo.textContent = `Rareté : ${cardDetails.rarity || "Inconnue"}`;
+
+                const hpInfo = document.createElement("p");
+                hpInfo.textContent = `PV : ${cardDetails.hp || "-"}`;
+
+                modal_DOM.tcgDetailInfos.append(setInfo, rarityInfo, hpInfo);
+
+                // Ajoute les attaques
+                (cardDetails.attacks || []).forEach((attack) => {
+                    const attackInfo = document.createElement("p");
+                    attackInfo.className = "rounded-md bg-slate-100 p-2";
+                    attackInfo.textContent = `${attack.name}${attack.damage ? ` - ${attack.damage}` : ""}`;
+                    modal_DOM.tcgDetailAttacks.append(attackInfo);
                 });
             });
-            modal_DOM.tcgCardsSection.inert = false;
-        } else {
-            modal_DOM.tcgCardsSection.inert = true;
-        }
+        });
+
+        modal_DOM.tcgCardsSection.inert = cardsWithImages.length === 0;
     }
 
-    const cryUrl = getCryUrl(pkmnData.name.en || pkmnData.name.fr);
+    const cryUrl =
+        pkmnExtraData.cries?.latest ||
+        pkmnExtraData.cries?.legacy;
+
     if (cryUrl && modal_DOM.crySection) {
+        modal_DOM.crySection.inert = false;
         initWaveSurfer(cryUrl);
+    } else if (modal_DOM.crySection) {
+        modal_DOM.crySection.inert = true;
     }
 
     const listRegions = ["alola", "hisui", "galar", "paldea"];
