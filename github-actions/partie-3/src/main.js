@@ -1,8 +1,8 @@
 import {
     fetchPokemonForGeneration,
     fetchPokemon,
+    fetchPokemonExternalData
 } from "#api";
-
 import loadPokemonData from "./pokemon-modal";
 import "./picture-in-picture";
 import {
@@ -121,7 +121,7 @@ const setScrollIndicator = (indicatorId) => {
 export let hasReachPokedexEnd = false;
 
 delegateEventHandler(document, "click", "[data-load-generation]", (e) => {
-    // Trouver la génération actuelle (dernier pokedex chargé)
+    // Dernier pokedex chargé 
     const currentGenerations = document.querySelectorAll("[data-header-pokedex]");
     const lastGeneration = currentGenerations.length > 0
         ? Math.max(...Array.from(currentGenerations).map(el => parseInt(el.dataset.headerPokedex) || 0))
@@ -129,10 +129,10 @@ delegateEventHandler(document, "click", "[data-load-generation]", (e) => {
     const nextGeneration = lastGeneration + 1;
 
     const MAX_GENERATIONS = 9;
-    if (nextGeneration <= MAX_GENERATIONS) { // Limiter aux 9 générations
+    if (nextGeneration <= MAX_GENERATIONS) { //Limite
         loadPokedexForGeneration(nextGeneration, e.target.dataset.selfDelete === "" ? e.target : null);
     } else {
-        // Masquer le bouton si on a atteint la dernière génération
+        // Masquer le bouton pour dernière generation
         e.target.style.display = 'none';
     }
 });
@@ -404,10 +404,23 @@ export const observeURL = async () => {
     if (pkmnId !== null) {
         try {
             const pkmnData = await fetchPokemon(pkmnId, urlParams.get("region"));
-            pkmnData.alternate_form_id = urlParams.get("alternate_form_id");
+pkmnData.alternate_form_id = urlParams.get("alternate_form_id");
 
-            await loadPokemonData(pkmnData);
-            modal.showModal();
+// récupération de la génération du Pokémon
+const speciesData = await fetchPokemonExternalData(pkmnId);
+const generationUrl = speciesData.generation.url;
+const generationId = parseInt(
+    generationUrl.split("/").filter(Boolean).pop()
+);
+
+// chargement des générations nécessaires
+for (let i = 1; i <= generationId; i++) {
+    await loadPokedexForGeneration(i);
+}
+
+// ouverture de la modale
+await loadPokemonData(pkmnData);
+modal.showModal();
         } catch (_e) {
             modal.close();
             errorMessageContainer.textContent = `Le Pokémon avec l'id "${pkmnId}" n'existe pas`;

@@ -35,6 +35,7 @@ window.addEventListener(CUSTOM_EVENTS.startLoading, () => {
 window.addEventListener(CUSTOM_EVENTS.endLoading, () => {
     pikachuLoading.hidePopover();
     pokedexContainer.setAttribute("aria-busy", false);
+    if (!modal.open) {
     faviconContainer.setAttribute("href", initialPageFavicon);
-    document.documentElement.classList.remove("cursor-progress");
+}   document.documentElement.classList.remove("cursor-progress");
 });
