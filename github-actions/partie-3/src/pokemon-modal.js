@@ -877,17 +877,26 @@ displayModal = async (pkmnData) => {
     modal_DOM.nbGames.textContent = ` (${listGames.length})`;
     modal_DOM.listGames.closest("details").inert = listGames.length === 0;
 
-    if (modal_DOM.listRegionalPokedex && pkmnExtraData.pokedex_numbers?.length) {
+    if (modal_DOM.listRegionalPokedex && modal_DOM.pokedexNumbersSection) {
         clearTagContent(modal_DOM.listRegionalPokedex);
-        pkmnExtraData.pokedex_numbers.forEach((pokedexEntry) => {
+
+        // Numéros des Pokédex régionaux
+        const pokedexNumbers = listDescriptions.pokedex_numbers || [];
+
+        pokedexNumbers.forEach((pokedexEntry) => {
             const li = document.createElement("li");
-            const regionName = POKEDEX[pokedexEntry.pokedex.name] || pokedexEntry.pokedex.name;
-            li.textContent = `${regionName} : ${pokedexEntry.entry_number}`;
+
+            const pokedexName =
+                POKEDEX[pokedexEntry.pokedex.name] ||
+                pokedexEntry.pokedex.name;
+
+            li.textContent = `${pokedexName} : ${pokedexEntry.entry_number}`;
+
             modal_DOM.listRegionalPokedex.append(li);
         });
-        modal_DOM.pokedexNumbersSection.inert = false;
-    } else if (modal_DOM.pokedexNumbersSection) {
-        modal_DOM.pokedexNumbersSection.inert = true;
+
+        modal_DOM.pokedexNumbersSection.inert =
+            pokedexNumbers.length === 0;
     }
 
     const tcgCards = await getTCGDexCards(pkmnData.name.en || pkmnData.name.fr);

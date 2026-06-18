@@ -1,18 +1,17 @@
 import { expect, describe, it } from 'vitest';
 
-import { getVersionForName, cleanString, getEvolutionChain } from "#src/utils/index.js";
-
+import { cleanString, getEvolutionChain, FRENCH_GAMES_NAME } from "#src/utils/index.js";
 import { evolutionLine, evolutionLineFr, pokedex } from "#mocks/index.js";
 
-describe("getVersionForName", () => {
-    it("should return black version", () => {
-        expect(getVersionForName["ruby"]).toMatch(/rubis/i);
+describe("FRENCH_GAMES_NAME", () => {
+    it("should return the French name for Ruby version", () => {
+        expect(FRENCH_GAMES_NAME["ruby"]).toMatch(/rubis/i);
     });
 });
 
 describe("cleanString", () => {
     it("should remove all accents and lowercase string", () => {
-        expect(cleanString("Stéphane")).toBe("stéphane");
+        expect(cleanString("Stéphane")).toBe("stephane");
     });
 });
 
