@@ -161,9 +161,7 @@ const getTCGDexCardDetails = async (cardId) => {
     }
 };
 
-const getCryUrl = (name) => {
-    return `https://play.pokemonshowdown.com/audio/cries/${name.toLowerCase().replace(/[^a-z0-9-]/g, "")}.ogg`;
-};
+
 
 const initWaveSurfer = (url) => {
     if (!modal_DOM.waveForm || !modal_DOM.playCry) return;

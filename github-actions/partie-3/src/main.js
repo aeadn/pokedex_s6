@@ -49,22 +49,15 @@ const loadGithubContributors = async () => {
         return;
     }
 
-    const githubRepo = import.meta.env.VITE_GITHUB_REPO;
-    if (!githubRepo || githubRepo.includes("OWNER/REPOSITORY")) {
-        return;
-    }
+    const githubRepo = "aeadn/pokedex_s6";
 
     const baseUrl = import.meta.env.DEV ? "/api/github" : "https://api.github.com";
-    const headers = {};
 
-    if (import.meta.env.VITE_GITHUB_TOKEN) {
-        headers.Authorization = `token ${import.meta.env.VITE_GITHUB_TOKEN}`;
-    }
 
     try {
-        const response = await fetch(`${baseUrl}/repos/${githubRepo}/contributors?per_page=12`, {
-            headers,
-        });
+        const response = await fetch(
+        `${baseUrl}/repos/${githubRepo}/contributors?per_page=12`
+        );
 
         if (!response.ok) {
             throw new Error(`GitHub API error ${response.status}`);
@@ -76,17 +69,38 @@ const loadGithubContributors = async () => {
         }
 
         githubContributorsList.innerHTML = "";
-        contributors.forEach((contributor) => {
+        for (const contributor of contributors) {
+            // Récupère le profil public du contributeur
+            const profileResponse = await fetch(`${baseUrl}/users/${contributor.login}`);
+            const profile = profileResponse.ok ? await profileResponse.json() : {};
             const li = document.createElement("li");
             li.className = "flex items-center gap-2 rounded-md p-2 bg-slate-100";
             li.innerHTML = `
-                <a href="${contributor.html_url}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2">
-                    <img src="${contributor.avatar_url}" alt="${contributor.login}" class="w-8 h-8 rounded-full border border-slate-300" />
-                    <span class="text-sm font-medium">${contributor.login}</span>
+                <a href="${contributor.html_url}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex items-center gap-2">
+
+                    <img
+                        src="${contributor.avatar_url}"
+                        alt="${contributor.login}"
+                        class="w-8 h-8 rounded-full border border-slate-300"
+                    />
+
+                    <div class="flex flex-col">
+                        <span class="text-sm font-medium">
+                            ${profile.name || "Nom non renseigné"}
+                        </span>
+
+                        <span class="text-xs text-slate-500">
+                            @${contributor.login}
+                        </span>
+                    </div>
+
                 </a>
             `;
             githubContributorsList.append(li);
-        });
+        }
     } catch (error) {
         console.warn("Impossible de charger les contributeurs GitHub", error);
     }
