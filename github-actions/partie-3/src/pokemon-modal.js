@@ -39,6 +39,26 @@ import { listPokemon, setTitleTagForGeneration, hasReachPokedexEnd, rippleEffect
 import loadingImage from "/images/loading.svg";
 import loadingImageRaw from "/images/loading.svg?raw";
 
+const API_BASE = "";
+let uploadedGameCoversCache = null;
+
+const fetchGameCovers = async () => {
+    if (uploadedGameCoversCache) return uploadedGameCoversCache;
+
+    try {
+        const response = await fetch(`${API_BASE}/uploads/game-covers`);
+        if (!response.ok) {
+            throw new Error(`Status ${response.status}`);
+        }
+        uploadedGameCoversCache = await response.json();
+        return uploadedGameCoversCache;
+    } catch (error) {
+        console.error("Unable to fetch uploaded game covers:", error);
+        uploadedGameCoversCache = {};
+        return uploadedGameCoversCache;
+    }
+};
+
 // Fallback data for types when API fails
 const defaultTypesList = [
     { name: "Acier", image: "https://raw.githubusercontent.com/Yarkis01/TyraDex/images/types/acier.png" },
@@ -892,6 +912,7 @@ displayModal = async (pkmnData) => {
 
     clearTagContent(modal_DOM.listGames);
 
+    const gameCovers = await fetchGameCovers();
     const listGames = [...listDescriptions.flavor_text_entries, ...pkmnExtraData.game_indices].filter((value, index, self) =>
         index === self.findIndex((t) => (
             t.version.name === value.version.name
@@ -902,8 +923,23 @@ displayModal = async (pkmnData) => {
 
     listGames.forEach((item) => {
         const li = document.createElement("li");
+        li.className = "mb-2 flex items-center gap-3";
+
         const versionName = FRENCH_GAMES_NAME[item.version.name] || "Unknown";
-        li.textContent = versionName;
+        const cover = gameCovers?.[item.version.name];
+
+        if (cover?.url) {
+            const img = document.createElement("img");
+            img.src = cover.url;
+            img.alt = `Jaquette ${versionName}`;
+            img.loading = "lazy";
+            img.className = "h-16 w-auto rounded-sm border border-slate-200 bg-slate-50 object-contain";
+            li.append(img);
+        }
+
+        const label = document.createElement("span");
+        label.textContent = versionName;
+        li.append(label);
 
         modal_DOM.listGames.append(li);
     });
