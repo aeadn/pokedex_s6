@@ -40,6 +40,18 @@ export default defineConfig({
                 changeOrigin: true,
                 rewrite: (path) => path.replace(/^\/api\/tcgdex/, ''),
             },
+            '/upload': {
+                target: 'http://localhost:3000',
+                changeOrigin: true,
+            },
+            '/games': {
+                target: 'http://localhost:3000',
+                changeOrigin: true,
+            },
+            '/uploads': {
+                target: 'http://localhost:3000',
+                changeOrigin: true,
+            },
         },
     },
     build: {

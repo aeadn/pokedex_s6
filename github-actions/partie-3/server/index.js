@@ -74,6 +74,39 @@ app.get("/uploads/list", (req, res) => {
   });
 });
 
+app.get("/uploads/game-covers", (req, res) => {
+  fs.readdir(uploadDir, (error, files) => {
+    if (error) return res.status(500).json({ error: "Impossible de lire le dossier des jaquettes." });
+
+    const gameKeys = Object.keys(FRENCH_GAMES_NAME);
+    const sanitizedKeys = gameKeys.map((key) => ({ key, sanitized: sanitize(key) }));
+
+    const covers = {};
+    files
+      .filter((filename) => /\.(png|jpe?g|gif|webp|avif)$/i.test(filename))
+      .forEach((filename) => {
+        const base = filename.replace(/\.[^.]+$/, "");
+        const withoutPrefix = base.replace(/^\d+-/, "");
+
+        const match = sanitizedKeys.find(({ sanitized }) =>
+          withoutPrefix === sanitized || withoutPrefix.startsWith(`${sanitized}-`)
+        );
+        if (!match) return;
+
+        const fileUrl = `/uploads/${encodeURIComponent(filename)}`;
+        const timestamp = Number(base.split("-")[0]) || 0;
+
+        if (!covers[match.key] || covers[match.key].timestamp < timestamp) {
+          covers[match.key] = { filename, url: fileUrl, timestamp };
+        }
+      });
+
+    res.json(Object.fromEntries(
+      Object.entries(covers).map(([key, value]) => [key, { filename: value.filename, url: value.url }])
+    ));
+  });
+});
+
 app.use("/uploads", express.static(uploadDir));
 
 const port = process.env.PORT || 3000;
