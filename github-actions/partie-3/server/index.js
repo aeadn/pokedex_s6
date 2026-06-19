@@ -4,6 +4,7 @@ import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import { FRENCH_GAMES_NAME } from "../src/utils/dataDictonaries.js";
+import { GAME_COVER_FILE_BASES, sanitizeFilename } from "./utils.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -14,23 +15,11 @@ const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, uploadDir),
   filename: (req, file, cb) => {
     const game = (req.body.game || "unknown").toString();
-    const originalName = file.originalname.replace(/\s+/g, "-");
-    const base = originalName.replace(/\.[^.]+$/, "");
     const ext = path.extname(file.originalname).toLowerCase();
-    const sanitizedBase = sanitize(`${game}-${base}`);
-    const filename = `${Date.now()}-${sanitizedBase}${ext}`;
+    const filename = `${sanitizeFilename(game)}${ext}`;
     cb(null, filename);
   },
 });
-
-function sanitize(str) {
-  return str
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
-}
 
 const upload = multer({ storage });
 
@@ -79,7 +68,10 @@ app.get("/uploads/game-covers", (req, res) => {
     if (error) return res.status(500).json({ error: "Impossible de lire le dossier des jaquettes." });
 
     const gameKeys = Object.keys(FRENCH_GAMES_NAME);
-    const sanitizedKeys = gameKeys.map((key) => ({ key, sanitized: sanitize(key) }));
+    const sanitizedKeys = gameKeys.map((key) => ({
+      key,
+      candidates: [sanitizeFilename(key), GAME_COVER_FILE_BASES[key]].filter(Boolean),
+    }));
 
     const covers = {};
     files
@@ -88,8 +80,8 @@ app.get("/uploads/game-covers", (req, res) => {
         const base = filename.replace(/\.[^.]+$/, "");
         const withoutPrefix = base.replace(/^\d+-/, "");
 
-        const match = sanitizedKeys.find(({ sanitized }) =>
-          withoutPrefix === sanitized || withoutPrefix.startsWith(`${sanitized}-`)
+        const match = sanitizedKeys.find(({ candidates }) =>
+          candidates.includes(withoutPrefix)
         );
         if (!match) return;
 

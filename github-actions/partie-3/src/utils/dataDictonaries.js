@@ -411,4 +411,6 @@ export const FRENCH_GAMES_NAME = {
     "lets-go-eevee": "Pokémon Let's Go, Évoli",
     "lets-go-pikachu": "Pokémon Let's Go, Pikachu",
     "legends-arceus": "Légendes Pokémon : Arceus",
+    "brilliant-diamond": "Pokémon Diamant Étincelant",
+    "shining-pearl": "Pokémon Perle Scintillante",
 };

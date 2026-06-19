@@ -15,7 +15,7 @@ async function fetchUploadedFiles() {
     files.forEach((file) => {
       const item = document.createElement("li");
       item.className = "rounded-md border border-slate-200 bg-white p-3 shadow-sm";
-      item.innerHTML = `<a href="${file.url}" target="_blank" rel="noopener noreferrer" class="text-slate-900 hover:text-slate-700">${file.filename}</a>`;
+      item.innerHTML = `<a href="${file.url}" download class="text-slate-900 hover:text-slate-700">${file.filename}</a>`;
       list.appendChild(item);
     });
   } catch (error) {
@@ -54,8 +54,8 @@ async function initUpload() {
     }
 
     const fd = new FormData();
-    fd.append("cover", fileInput.files[0]);
     fd.append("game", select.value);
+    fd.append("cover", fileInput.files[0]);
 
     status.textContent = "Envoi en cours...";
     try {
