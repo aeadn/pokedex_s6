@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="robots" content="noindex, nofollow">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+        <meta name="format-detection" content="telephone=no">
+        <meta name="theme-color" content="#0f172a" />
+
+        <title>Administration - Pokédex</title>
+        <link rel="stylesheet" href="/src/styles/main.css">
+        <script type="module" src="/src/main.js"></script>
+        <script type="module" src="/src/upload.js"></script>
+        <link data-favicon rel="shortcut icon" href="/favicon.png" type="image/png">
+    </head>
+    <body>
+        <header class="py-2 bg-slate-900 text-white">
+            <div class="mr-[max(env(safe-area-inset-right),_theme(space.3))] ml-[max(env(safe-area-inset-left),_theme(space.3))]">
+                <div class="mx-auto max-w-6xl flex justify-between items-center">
+                    <h1>Pokédex v%VERSION%</h1>
+                    <a href="/" class="px-3 py-2 bg-slate-700 hover:bg-slate-600 rounded-md text-sm">Retour au Pokédex</a>
+                </div>
+            </div>
+        </header>
+
+        <section class="mx-auto max-w-6xl p-4 bg-slate-50 rounded-3xl shadow-lg border border-slate-200 mt-8" aria-labelledby="admin-title">
+            <div class="mb-4">
+                <p class="text-sm uppercase tracking-[0.2em] text-slate-500">back-end / administration</p>
+                <h2 id="admin-title" class="text-2xl font-bold">Gestion des jaquettes de jeux</h2>
+                <p class="mt-2 text-slate-600">Sélectionnez un jeu dans la liste déroulante, choisissez une image, puis téléchargez la jaquette. Les fichiers sont renommés automatiquement en minuscules et sans accents.</p>
+            </div>
+            <form id="upload-form" class="grid grid-cols-1 gap-4 max-w-xl">
+                <label class="grid gap-2">
+                    <span class="font-semibold">Jeu</span>
+                    <select id="game-select" name="game" required class="block w-full mt-1 p-3 border rounded-md bg-white">
+                        <option value="" disabled selected>Choisissez un jeu</option>
+                    </select>
+                </label>
+                <label class="grid gap-2">
+                    <span class="font-semibold">Jaquette</span>
+                    <input id="cover-input" name="cover" type="file" accept="image/*" required class="block w-full mt-1 p-2 border rounded-md bg-white" />
+                </label>
+                <div class="flex flex-wrap items-center gap-3">
+                    <button type="submit" class="px-4 py-2 bg-slate-900 text-white rounded-md hover:bg-slate-800">Télécharger la jaquette</button>
+                    <span id="upload-status" class="text-sm text-slate-700"></span>
+                </div>
+            </form>
+            <div class="mt-8">
+                <h3 class="text-xl font-semibold">Jaquettes déjà uploadées</h3>
+                <p class="text-sm text-slate-600 mt-1">Cliquer sur un nom pour télécharger le fichier.</p>
+                <ul id="uploaded-files" class="mt-4 grid gap-2"></ul>
+            </div>
+        </section>
+
+        <style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+                background-color: #f8fafc;
+            }
+        </style>
+    </body>
+</html>

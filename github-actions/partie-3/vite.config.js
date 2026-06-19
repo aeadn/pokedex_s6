@@ -2,6 +2,8 @@ import { defineConfig } from "vite";
 import vituum from "vituum";
 import eslint from "vite-plugin-eslint";
 
+// Note: Vituum auto-serves files under ./src. Keep routes simple and link directly to administration.html
+
 export default defineConfig({
     base: "./",
     plugins: [
@@ -21,6 +23,7 @@ export default defineConfig({
         // Expose the server to the network allowing access from ip address
         host: true,
         open: true,
+        middlewareMode: false,
         proxy: {
             '/api/tyradex': {
                 target: 'https://tyradex.app',

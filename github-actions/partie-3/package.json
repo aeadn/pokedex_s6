@@ -4,7 +4,9 @@
     "version": "2025.0.0",
     "type": "module",
     "scripts": {
-        "dev": "vite",
+        "dev": "concurrently \"node server/index.js\" \"vite\"",
+        "dev:frontend": "vite",
+        "server": "node server/index.js",
         "start": "vite",
         "test": "vitest",
         "build": "vite build && rsync -am --include='*.php' --include='**/*.php' --exclude='*' ./ dist/",
@@ -15,6 +17,7 @@
     "devDependencies": {
         "@babel/core": "^7.26.0",
         "@babel/preset-env": "^7.26.0",
+        "concurrently": "^8.2.2",
         "@eslint/js": "^9.16.0",
         "@playwright/test": "^1.49.0",
         "@tailwindcss/postcss": "^4.0.0",
@@ -31,6 +34,8 @@
     },
     "dependencies": {
         "axios": "^1.7.8",
+        "express": "^4.18.2",
+        "multer": "^1.4.5-lts.1",
         "core-js": "^3.40.0",
         "wavesurfer.js": "^7.12.5"
     },
