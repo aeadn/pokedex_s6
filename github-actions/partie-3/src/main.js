@@ -49,15 +49,8 @@ const loadGithubContributors = async () => {
         return;
     }
 
-    const githubRepo = "aeadn/pokedex_s6";
-
-    const baseUrl = import.meta.env.DEV ? "/api/github" : "https://api.github.com";
-
-
     try {
-        const response = await fetch(
-        `${baseUrl}/repos/${githubRepo}/contributors?per_page=12`
-        );
+        const response = await fetch("/github/contributors");
 
         if (!response.ok) {
             throw new Error(`GitHub API error ${response.status}`);
@@ -70,9 +63,6 @@ const loadGithubContributors = async () => {
 
         githubContributorsList.innerHTML = "";
         for (const contributor of contributors) {
-            // Récupère le profil public du contributeur
-            const profileResponse = await fetch(`${baseUrl}/users/${contributor.login}`);
-            const profile = profileResponse.ok ? await profileResponse.json() : {};
             const li = document.createElement("li");
             li.className = "flex items-center gap-2 rounded-md p-2 bg-slate-100";
             li.innerHTML = `
@@ -89,7 +79,7 @@ const loadGithubContributors = async () => {
 
                     <div class="flex flex-col">
                         <span class="text-sm font-medium">
-                            ${profile.name || "Nom non renseigné"}
+                            ${contributor.name || "Nom non renseigné"}
                         </span>
 
                         <span class="text-xs text-slate-500">

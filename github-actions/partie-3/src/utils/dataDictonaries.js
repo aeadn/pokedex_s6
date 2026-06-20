@@ -361,10 +361,11 @@ export const POKEDEX = {
     "original-alola": "Alola (SL)",
     "updated-alola": "Alola (USUL)",
     "unova": "Unys",
+    "original-unova": "Unys",
     "updated-unova": "Unys (N2B2)",
     "kalos-mountain": "Kalos (Monts)",
     "kalos-coastal": "Kalos (Côtes)",
-    "crown-tundra": "Courroneige",
+    "crown-tundra": "Couronneige",
     "original-melemele": "Ile Mele-Mele",
     "updated-melemele": "Ile Mele-Mele (USUL)",
     "original-akala": "Ile d'Akala",
@@ -413,4 +414,5 @@ export const FRENCH_GAMES_NAME = {
     "legends-arceus": "Légendes Pokémon : Arceus",
     "brilliant-diamond": "Pokémon Diamant Étincelant",
     "shining-pearl": "Pokémon Perle Scintillante",
+    "original-unova": "Unys",
 };

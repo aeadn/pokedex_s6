@@ -6,7 +6,7 @@ test.beforeEach(async ({ page }) => {
 
 test("should add new Pokedex", { tag: "@smoke" }, async ({ page }) => {
     await page.waitForResponse((resp) =>
-        resp.url().includes("https://tyradex.app/api/v1/gen/1")
+        resp.url().includes("/api/tyradex/api/v1/gen/1")
     );
     const pokedexOnPage = await page.getByTestId("pokedex");
     const nbPokedexOnPage = await pokedexOnPage.count();
@@ -23,7 +23,7 @@ test("should disable load generation button when there's no generation anymore",
     page,
 }) => {
     await page.waitForResponse((resp) =>
-        resp.url().includes("https://tyradex.app/api/v1/gen/1")
+        resp.url().includes("/api/tyradex/api/v1/gen/1")
     );
     const loadGenerationBtn = await page
         .getByTestId("load-generation-btn")
@@ -34,8 +34,8 @@ test("should disable load generation button when there's no generation anymore",
         return node.setAttribute("data-load-generation", fakeGeneration);
     });
 
-    const dexRequest = page.waitForResponse(
-        `https://tyradex.app/api/v1/gen/${fakeGeneration}`
+    const dexRequest = page.waitForResponse((resp) =>
+        resp.url().includes(`/api/tyradex/api/v1/gen/${fakeGeneration}`)
     );
 
     await expect(loadGenerationBtn).toHaveAttribute(
@@ -52,7 +52,7 @@ test("should not reload the page after select a Pokemon", { tag: "@smoke" }, asy
     page,
 }) => {
     await page.waitForResponse((resp) =>
-        resp.url().includes("https://tyradex.app/api/v1/gen/1")
+        resp.url().includes("/api/tyradex/api/v1/gen/1")
     );
 
         const firstPkmn = page.getByTestId("pokemon").first();
@@ -67,24 +67,25 @@ test("should change title's value according to current generation displayed", as
     page,
 }) => {
     await page.waitForResponse((resp) =>
-        resp.url().includes("https://tyradex.app/api/v1/gen/1")
+        resp.url().includes("/api/tyradex/api/v1/gen/1")
     );
 
     const loadGenerationButton = await page
         .getByTestId("load-generation-btn")
         .first();
-    loadGenerationButton.click();
     const nextGenerationNumber = await loadGenerationButton.getAttribute(
         "data-load-generation"
     );
 
-    await page.waitForResponse((resp) =>
+    const nextGenerationResponse = page.waitForResponse((resp) =>
         resp
             .url()
             .includes(
-                `https://tyradex.app/api/v1/gen/${nextGenerationNumber}`
+                `/api/tyradex/api/v1/gen/${nextGenerationNumber}`
             )
     );
+    await loadGenerationButton.click();
+    await nextGenerationResponse;
 
     const nextHeader = page.locator(`[data-header-pokedex="${nextGenerationNumber}"]`).first();
     await nextHeader.waitFor();
@@ -102,7 +103,7 @@ test("should change title's value according to current generation displayed", as
 
 test("should listen to query string params @smoke", async ({ page }) => {
     await page.waitForResponse((resp) =>
-        resp.url().includes("https://tyradex.app/api/v1/gen/1")
+        resp.url().includes("/api/tyradex/api/v1/gen/1")
     );
 
     const firstPkmn = page.getByTestId("pokemon").first();
@@ -123,7 +124,7 @@ test("should indicate the right gen in the navigation shortcut", async ({
     page,
 }) => {
     await page.waitForResponse((resp) =>
-        resp.url().includes("https://tyradex.app/api/v1/gen/1")
+        resp.url().includes("/api/tyradex/api/v1/gen/1")
     );
 
     const loadGenerationButton = await page
@@ -138,7 +139,7 @@ test("should indicate the right gen in the navigation shortcut", async ({
         resp
             .url()
             .includes(
-                `https://tyradex.app/api/v1/gen/${nextGenerationNumber}`
+                `/api/tyradex/api/v1/gen/${nextGenerationNumber}`
             )
     );
 

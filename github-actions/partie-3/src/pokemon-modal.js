@@ -980,7 +980,7 @@ displayModal = async (pkmnData) => {
             modal_DOM.tcgCardDetails.hidden = true;
         }
 
-        cardsWithImages.slice(0, 6).forEach((card) => {
+        cardsWithImages.forEach((card) => {
             // Carte cliquable
             const cardItem = document.createElement("button");
             cardItem.type = "button";

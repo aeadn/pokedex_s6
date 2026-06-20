@@ -8,6 +8,7 @@ export default defineConfig({
     base: "./",
     plugins: [
         vituum({
+            input: ["./src/*.html"],
             pages: {
                 dir: "./src",
                 root: "./",
@@ -30,11 +31,6 @@ export default defineConfig({
                 changeOrigin: true,
                 rewrite: (path) => path.replace(/^\/api\/tyradex/, ''),
             },
-            '/api/github': {
-                target: 'https://api.github.com',
-                changeOrigin: true,
-                rewrite: (path) => path.replace(/^\/api\/github/, ''),
-            },
             '/api/tcgdex': {
                 target: 'https://api.tcgdex.net',
                 changeOrigin: true,
@@ -49,6 +45,10 @@ export default defineConfig({
                 changeOrigin: true,
             },
             '/uploads': {
+                target: 'http://localhost:3000',
+                changeOrigin: true,
+            },
+            '/github': {
                 target: 'http://localhost:3000',
                 changeOrigin: true,
             },

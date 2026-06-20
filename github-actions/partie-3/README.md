@@ -36,8 +36,8 @@ npm run preview
 ### Configuration
 Créer un fichier `.env.local` à la racine du projet avec :
 ```env
-VITE_GITHUB_TOKEN=votre_token_github
-VITE_GITHUB_REPO=owner/repository
+GITHUB_TOKEN=votre_token_github
+GITHUB_REPO=owner/repository
 ```
 
 ### Schéma de base de données
@@ -46,8 +46,8 @@ L'application utilise des APIs externes et ne nécessite pas de base de données
 ### Template de fichier d'environnement
 ```env
 # Copier ce contenu dans .env.local
-VITE_GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxx
-VITE_GITHUB_REPO=votre-username/votre-repo
+GITHUB_TOKEN=remplacez_par_votre_token
+GITHUB_REPO=votre-username/votre-repo
 ```
 
 ## Fonctionnalités implémentées

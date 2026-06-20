@@ -1,7 +1,24 @@
 import { expect, describe, it } from 'vitest';
 
-import { cleanString, getEvolutionChain, FRENCH_GAMES_NAME } from "#src/utils/index.js";
+import {
+    cleanString,
+    getEvolutionChain,
+    FRENCH_GAMES_NAME,
+    POKEDEX,
+} from "#src/utils/index.js";
 import { evolutionLine, evolutionLineFr, pokedex } from "#mocks/index.js";
+
+
+describe("POKEDEX", () => {
+    it("translates Unova pokedex names into French", () => {
+        expect(POKEDEX["original-unova"]).toBe("Unys");
+        expect(POKEDEX["updated-unova"]).toBe("Unys (N2B2)");
+    });
+
+    it("translates Crown Tundra correctly", () => {
+        expect(POKEDEX["crown-tundra"]).toBe("Couronneige");
+    });
+});
 
 describe("FRENCH_GAMES_NAME", () => {
     it("should return the French name for Ruby version", () => {

@@ -4,9 +4,9 @@
     "version": "2025.0.0",
     "type": "module",
     "scripts": {
-        "dev": "concurrently \"node server/index.js\" \"vite\"",
+        "dev": "concurrently \"node --env-file-if-exists=.env.local server/index.js\" \"vite\"",
         "dev:frontend": "vite",
-        "server": "node server/index.js",
+        "server": "node --env-file-if-exists=.env.local server/index.js",
         "start": "vite",
         "test": "vitest",
         "build": "vite build && rsync -am --include='*.php' --include='**/*.php' --exclude='*' ./ dist/",

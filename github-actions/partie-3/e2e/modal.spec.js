@@ -37,7 +37,7 @@ test("should load next pokemon", { tag: "@smoke" }, async ({ page }) => {
 
     await Promise.all([
         page.waitForResponse((resp) =>
-            resp.url().includes(`https://tyradex.app/api/v1/pokemon/${pkmnId}`)
+            resp.url().includes(`/api/tyradex/api/v1/pokemon/${pkmnId}`)
         ),
         page.waitForResponse((resp) =>
             resp.url().includes(`https://pokeapi.co/api/v2/pokemon-species/${pkmnId}`)
@@ -61,7 +61,7 @@ test("should load previous pokemon", async ({ page }) => {
 
     await Promise.all([
         page.waitForResponse((resp) =>
-            resp.url().includes(`https://tyradex.app/api/v1/pokemon/${pkmnId}`)
+            resp.url().includes(`/api/tyradex/api/v1/pokemon/${pkmnId}`)
         ),
         page.waitForResponse((resp) =>
             resp.url().includes(`https://pokeapi.co/api/v2/pokemon-species/${pkmnId}`)
@@ -83,7 +83,7 @@ test("should open regional form", async ({ page }) => {
 
     await Promise.all([
         page.waitForResponse((resp) =>
-            resp.url().includes(`https://tyradex.app/api/v1/pokemon/${pkmnId}`)
+            resp.url().includes(`/api/tyradex/api/v1/pokemon/${pkmnId}`)
         ),
         page.waitForResponse((resp) =>
             resp.url().includes(`https://pokeapi.co/api/v2/pokemon-species/${pkmnId}`)
@@ -91,7 +91,7 @@ test("should open regional form", async ({ page }) => {
     ])
 
     await expect(page.getByTestId("pokemon-modal")).toHaveAttribute("open", "");
-    await page.getByTestId("regional-forms").first().click();
+    await page.getByTestId("regional-forms").first().locator("summary").click({ force: true });
     const firstRegionalPokemon = await page.getByTestId("regional-forms").getByTestId("pokemon").first();
     const firstRegionalPokemonURL = new URL(await firstRegionalPokemon.getAttribute("href"));
     const firstRegionalPokemonRegion = firstRegionalPokemonURL.searchParams.get("region");
@@ -99,7 +99,7 @@ test("should open regional form", async ({ page }) => {
     await firstRegionalPokemon.click();
 
     await page.waitForResponse((resp) =>
-        resp.url().includes(`https://tyradex.app/api/v1/pokemon/${pkmnId}/${firstRegionalPokemonRegion}`)
+        resp.url().includes(`/api/tyradex/api/v1/pokemon/${pkmnId}/${firstRegionalPokemonRegion}`)
     );
 
     const currentUrl = new URL(await page.url());
@@ -115,7 +115,7 @@ test("should keep title tag value after scroll", async ({ page }) => {
         page.waitForResponse("https://pokeapi.co/api/v2/evolution-chain/10/"),
         page.waitForResponse(`https://pokeapi.co/api/v2/pokemon-species/${pkmnId}`),
         page.waitForResponse(`https://pokeapi.co/api/v2/pokemon/${pkmnId}`),
-        page.waitForResponse(`https://tyradex.app/api/v1/pokemon/${pkmnId}`),
+        page.waitForResponse(`http://localhost:5173/api/tyradex/api/v1/pokemon/${pkmnId}`),
     ])
 
     const modal = page.locator("[data-testid='pokemon-modal'][open]");
@@ -137,7 +137,7 @@ test("should cache dex's data", async ({ page }) => {
         page.waitForResponse("https://pokeapi.co/api/v2/evolution-chain/10/"),
         page.waitForResponse(`https://pokeapi.co/api/v2/pokemon-species/${pkmnId}`),
         page.waitForResponse(`https://pokeapi.co/api/v2/pokemon/${pkmnId}`),
-        page.waitForResponse(`https://tyradex.app/api/v1/pokemon/${pkmnId}`),
+        page.waitForResponse(`http://localhost:5173/api/tyradex/api/v1/pokemon/${pkmnId}`),
     ])
 
     const modal = page.locator("[data-testid='pokemon-modal'][open]");
@@ -145,7 +145,7 @@ test("should cache dex's data", async ({ page }) => {
 
     await page.getByTestId("previous-pkmn").first().click();
 
-    const dexRequest = page.waitForResponse("https://tyradex.app/api/v1/gen/1", { timeout: 5000 });
+    const dexRequest = page.waitForResponse("http://localhost:5173/api/tyradex/api/v1/gen/1", { timeout: 5000 });
     try {
         await dexRequest;
     } catch {
@@ -161,7 +161,7 @@ test("should cache pokemon's data", async ({ page }) => {
         page.waitForResponse("https://pokeapi.co/api/v2/evolution-chain/10/"),
         page.waitForResponse(`https://pokeapi.co/api/v2/pokemon-species/${pkmnId}`),
         page.waitForResponse(`https://pokeapi.co/api/v2/pokemon/${pkmnId}`),
-        page.waitForResponse(`https://tyradex.app/api/v1/pokemon/${pkmnId}`),
+        page.waitForResponse(`http://localhost:5173/api/tyradex/api/v1/pokemon/${pkmnId}`),
     ])
 
     const modal = page.locator("[data-testid='pokemon-modal'][open]");
@@ -208,7 +208,7 @@ test("should have a label for all abilities after loading Pokémon and its Poké
     await page.getByTestId("close-modal").first().click();
 
     const loadGenerationButton = await page.getByTestId("load-generation-btn").first()
-    loadGenerationButton.click();
+    await loadGenerationButton.click();
 
     await page.getByTestId("pokemon").nth(170).click();
     await modal.waitFor();

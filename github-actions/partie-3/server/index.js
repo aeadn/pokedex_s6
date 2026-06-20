@@ -50,6 +50,42 @@ app.get("/games", (req, res) => {
   res.json(games);
 });
 
+app.get("/github/contributors", async (_req, res) => {
+  const repo = process.env.GITHUB_REPO || "aeadn/pokedex_s6";
+  const headers = {
+    Accept: "application/vnd.github+json",
+    "User-Agent": "pokedex-s6",
+  };
+
+  if (process.env.GITHUB_TOKEN) {
+    headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
+  }
+
+  try {
+    const response = await fetch(`https://api.github.com/repos/${repo}/contributors?per_page=100`, { headers });
+    if (!response.ok) {
+      return res.status(response.status).json({ error: "Impossible de charger les contributeurs GitHub." });
+    }
+
+    const contributors = await response.json();
+    const profiles = await Promise.all(contributors.map(async (contributor) => {
+      const profileResponse = await fetch(contributor.url, { headers });
+      const profile = profileResponse.ok ? await profileResponse.json() : {};
+
+      return {
+        login: contributor.login,
+        name: profile.name || null,
+        avatar_url: contributor.avatar_url,
+        html_url: contributor.html_url,
+      };
+    }));
+
+    return res.json(profiles);
+  } catch (_error) {
+    return res.status(502).json({ error: "Impossible de contacter GitHub." });
+  }
+});
+
 app.post("/upload", upload.single("cover"), (req, res) => {
   if (!req.file) return res.status(400).json({ error: "No file uploaded" });
   res.json({ ok: true, filename: req.file.filename, path: `/uploads/${req.file.filename}` });
