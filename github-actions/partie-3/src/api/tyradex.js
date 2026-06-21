@@ -345,7 +345,12 @@ export const fetchPokemonForGeneration = async (generation = 1) => {
         return listPokemon;
     } catch (error) {
         console.warn(`Impossible de charger la génération ${generation} depuis l'API, utilisation des données par défaut:`, error.message);
-        return generationFallbacks[generation] || [];
+        if (generationFallbacks[generation]) {
+            return generationFallbacks[generation];
+        }
+
+        const status = error.cause?.status || error.response?.status;
+        throw new Error(error.message, { cause: { status } });
     }
 }
 

@@ -91,16 +91,19 @@ test("should open regional form", async ({ page }) => {
     ])
 
     await expect(page.getByTestId("pokemon-modal")).toHaveAttribute("open", "");
-    await page.getByTestId("regional-forms").first().locator("summary").click({ force: true });
-    const firstRegionalPokemon = await page.getByTestId("regional-forms").getByTestId("pokemon").first();
+    const regionalForms = page.getByTestId("regional-forms").first();
+    await regionalForms.evaluate((details) => details.open = true);
+    await expect(regionalForms).toHaveAttribute("open", "");
+
+    const firstRegionalPokemon = regionalForms.getByTestId("pokemon").first();
     const firstRegionalPokemonURL = new URL(await firstRegionalPokemon.getAttribute("href"));
     const firstRegionalPokemonRegion = firstRegionalPokemonURL.searchParams.get("region");
 
-    await firstRegionalPokemon.click();
-
-    await page.waitForResponse((resp) =>
+    const regionalFormResponse = page.waitForResponse((resp) =>
         resp.url().includes(`/api/tyradex/api/v1/pokemon/${pkmnId}/${firstRegionalPokemonRegion}`)
     );
+    await firstRegionalPokemon.evaluate((link) => link.click());
+    await regionalFormResponse;
 
     const currentUrl = new URL(await page.url());
 

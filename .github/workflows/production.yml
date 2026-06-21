@@ -91,7 +91,7 @@ jobs:
 
   deploy:
     name: Deploy build to production
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 45
@@ -105,5 +105,5 @@ jobs:
         run: echo "${{ secrets.SSH_KEY }}" > ~/deploy_key && chmod 400 ~/deploy_key
         working-directory: .
       - name: Move files
-        run: rsync -Pavz --delete -e "ssh -i ~/deploy_key -o StrictHostKeyChecking=no" front-end-build/ ${{ secrets.USER }}@${{ secrets.SERVER }}:~/www/
+        run: rsync -Pavz -e "ssh -i ~/deploy_key -o StrictHostKeyChecking=no" front-end-build/ ${{ secrets.USER }}@${{ secrets.SERVER }}:~/www/
         working-directory: .

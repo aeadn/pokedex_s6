@@ -28,6 +28,10 @@ test("should disable load generation button when there's no generation anymore",
     const loadGenerationBtn = await page
         .getByTestId("load-generation-btn")
         .first();
+    await expect(loadGenerationBtn).toHaveAttribute(
+        "data-load-generation",
+        "2"
+    );
     const fakeGeneration = "42";
     await loadGenerationBtn.evaluate((node) => {
         const fakeGeneration = "42";
@@ -73,6 +77,10 @@ test("should change title's value according to current generation displayed", as
     const loadGenerationButton = await page
         .getByTestId("load-generation-btn")
         .first();
+    await expect(loadGenerationButton).toHaveAttribute(
+        "data-load-generation",
+        "2"
+    );
     const nextGenerationNumber = await loadGenerationButton.getAttribute(
         "data-load-generation"
     );
@@ -89,8 +97,6 @@ test("should change title's value according to current generation displayed", as
 
     const nextHeader = page.locator(`[data-header-pokedex="${nextGenerationNumber}"]`).first();
     await nextHeader.waitFor();
-
-    await page.waitForTimeout(2);
 
     await page.evaluate(() => {
         window.scrollTo(0, document.body.scrollHeight);
