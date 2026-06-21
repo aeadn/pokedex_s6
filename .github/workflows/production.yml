@@ -75,35 +75,26 @@ jobs:
           echo "VITE_BUILD_AUTHOR=${{ github.actor }}" >> "$GITHUB_ENV"
       - name: Create build
         run: npm run build
-      - name: Protect env files
-        run: |
-          cat > dist/.htaccess <<'EOF'
-          <FilesMatch "^\.env">
-              Require all denied
-          </FilesMatch>
-          EOF
-      - name: Generate artifact
-        uses: actions/upload-artifact@v4
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v4
         with:
-          name: front-end-build
           path: github-actions/partie-3/dist
-          include-hidden-files: true
 
   deploy:
-    name: Deploy build to production
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    name: Deploy to GitHub Pages
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: front-end-build
-          path: front-end-build
-      - name: Fill ssh key
-        run: echo "${{ secrets.SSH_KEY }}" > ~/deploy_key && chmod 400 ~/deploy_key
-        working-directory: .
-      - name: Move files
-        run: rsync -Pavz -e "ssh -i ~/deploy_key -o StrictHostKeyChecking=no" front-end-build/ ${{ secrets.USER }}@${{ secrets.SERVER }}:~/www/
-        working-directory: .
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
