@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: mcr.microsoft.com/playwright:v1.49.0-noble
-      options: --user 1001
+      options: --user 1001 --ipc=host
     timeout-minutes: 45
     steps:
       - name: Check out repository code
