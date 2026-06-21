@@ -93,10 +93,16 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: front-end-build
-          path: front-end-build
+          path: github-actions/partie-3/dist
+      - name: Show build content
+        run: find "${{ github.workspace }}/github-actions/partie-3/dist" -maxdepth 3 -type f -print
+        working-directory: .
+      - name: Show deployment destination
+        run: echo "rsync github-actions/partie-3/dist/ -> ${{ secrets.SSH_USER }}@${{ secrets.SSH_SERVER }}:/home/pokedexmmi/www/"
+        working-directory: .
       - name: Configure SSH key
         run: echo "${{ secrets.SSH_KEY }}" > ~/deploy_key && chmod 400 ~/deploy_key
         working-directory: .
       - name: Deploy files
-        run: rsync -Pavz --delete -e "ssh -i ~/deploy_key -o StrictHostKeyChecking=no" "${{ github.workspace }}/front-end-build/" ${{ secrets.SSH_USER }}@${{ secrets.SSH_SERVER }}:/home/pokedexmmi/www/
+        run: rsync -Pavz --delete -e "ssh -i ~/deploy_key -o StrictHostKeyChecking=no" "${{ github.workspace }}/github-actions/partie-3/dist/" ${{ secrets.SSH_USER }}@${{ secrets.SSH_SERVER }}:/home/pokedexmmi/www/
         working-directory: .
