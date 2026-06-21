@@ -1,2 +1,2 @@
-URL du projet sur GitHub : [À définir après mise en ligne du repository]
-URL du site déployé : [À définir après déploiement]
+URL du projet sur GitHub : https://github.com/aeadn/pokedex_s6
+URL du site déployé : https://aeadn.github.io/pokedex_s6/

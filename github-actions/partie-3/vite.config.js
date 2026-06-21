@@ -23,7 +23,7 @@ export default defineConfig({
     server: {
         // Expose the server to the network allowing access from ip address
         host: true,
-        open: !process.env.CI,
+        open: true,
         middlewareMode: false,
         proxy: {
             '/api/tyradex': {

@@ -6,7 +6,7 @@ import { defineConfig, devices } from "@playwright/test";
  */
 // require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 
-const baseURL = "http://127.0.0.1:5173";
+const baseURL = "http://localhost:5173";
 
 /**
  * @see https://playwright.dev/docs/test-configuration
@@ -22,7 +22,7 @@ export default defineConfig({
     /* Opt out of parallel tests on CI. */
     workers: process.env.CI ? 1 : undefined,
     /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-    reporter: process.env.CI ? [["line"], ["github"], ["html", { open: "never" }]] : "html",
+    reporter: process.env.CI ? [["dot"], ["github"], ["html"]] : "html",
     /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
     use: {
         /* Base URL to use in actions like `await page.goto('/')`. */
@@ -36,7 +36,7 @@ export default defineConfig({
     projects: [
         {
             name: "chromium",
-            use: { ...devices["Desktop Chrome"], channel: "chrome" },
+            use: { ...devices["Desktop Chrome"] },
         },
 
         {
@@ -72,10 +72,8 @@ export default defineConfig({
 
     /* Run your local dev server before starting the tests */
     webServer: {
-        command: "npm start -- --host 127.0.0.1 --port 5173 --strictPort",
+        command: "npm start",
         url: baseURL,
         reuseExistingServer: !process.env.CI,
-        stdout: "pipe",
-        stderr: "pipe",
     },
 });
