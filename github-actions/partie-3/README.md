@@ -50,6 +50,25 @@ GITHUB_TOKEN=remplacez_par_votre_token
 GITHUB_REPO=votre-username/votre-repo
 ```
 
+## Accès local (développement)
+
+Une fois `npm run dev` lancé depuis `github-actions/partie-3` :
+
+- Frontend (Vite) : http://localhost:5173/
+- Page d'administration (gestion des jaquettes) : http://localhost:5173/administration.html
+- Backend d'uploads : http://localhost:3000 (API utilisée par la page d'administration)
+
+La configuration Vite proxie les routes `/upload`, `/games`, `/uploads` et `/github` vers le serveur d'uploads `http://localhost:3000`.
+
+## Correction appliquée
+
+J'ai corrigé un problème où le clic sur le bouton "Charger la génération suivante" provoquait parfois le chargement en double de la même génération. La gestion des événements a été unifiée :
+
+- le bouton global du footer (sans `data-load-generation`) charge la génération suivante automatiquement,
+- les boutons générés avec `data-load-generation="<num>"` chargent la génération spécifiée.
+
+Le correctif est dans : `src/main.js`.
+
 ## Fonctionnalités implémentées
 
 ### Front-end

@@ -125,7 +125,20 @@ const setScrollIndicator = (indicatorId) => {
 export let hasReachPokedexEnd = false;
 
 delegateEventHandler(document, "click", "[data-load-generation]", (e) => {
-    // Dernier pokedex chargé 
+    // Support two kinds of buttons:
+    // - specific buttons generated with `data-load-generation="<num>"`
+    // - the global footer button without an explicit generation (loads next)
+    const btn = e.target.closest('[data-load-generation]');
+    if (!btn) return;
+
+    const explicit = btn.dataset.loadGeneration;
+    if (explicit) {
+        // Button targets a specific generation
+        loadPokedexForGeneration(Number(explicit), btn.dataset.selfDelete === "" ? btn : null);
+        return;
+    }
+
+    // Footer / generic button: calculate next generation to load
     const currentGenerations = document.querySelectorAll("[data-header-pokedex]");
     const lastGeneration = currentGenerations.length > 0
         ? Math.max(...Array.from(currentGenerations).map(el => parseInt(el.dataset.headerPokedex) || 0))
@@ -133,11 +146,11 @@ delegateEventHandler(document, "click", "[data-load-generation]", (e) => {
     const nextGeneration = lastGeneration + 1;
 
     const MAX_GENERATIONS = 9;
-    if (nextGeneration <= MAX_GENERATIONS) { //Limite
-        loadPokedexForGeneration(nextGeneration, e.target.dataset.selfDelete === "" ? e.target : null);
+    if (nextGeneration <= MAX_GENERATIONS) {
+        loadPokedexForGeneration(nextGeneration, btn.dataset.selfDelete === "" ? btn : null);
     } else {
         // Masquer le bouton pour dernière generation
-        e.target.style.display = 'none';
+        btn.style.display = 'none';
     }
 });
 
@@ -456,9 +469,7 @@ modal.showModal();
     }
 }
 
-delegateEventHandler(document, "click", "[data-load-generation]", (e) => {
-    loadPokedexForGeneration(e.target.dataset.loadGeneration, e.target.dataset.selfDelete === "" ? e.target : null);
-});
+
 
 delegateEventHandler(document, "change", "[data-layout-switch]", (e) => {
     localStorage.setItem("is_grid_layout", e.target.checked);
