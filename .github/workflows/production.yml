@@ -17,6 +17,9 @@ jobs:
   e2e_tests:
     name: Run end-to-end tests
     runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.49.0-noble
+      options: --user 1001
     timeout-minutes: 45
     steps:
       - name: Check out repository code
@@ -28,8 +31,6 @@ jobs:
         run: git config user.email "test@example.com" && git config user.name "CI/CD"
       - name: Install the dependencies
         run: npm ci
-      - name: Install playwright
-        run: npx playwright install --with-deps chromium
       - name: Run smoke tests
         run: npx playwright test --project=chromium --grep @smoke
       - name: Run non-smoke tests
