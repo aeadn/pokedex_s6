@@ -98,5 +98,5 @@ jobs:
         run: echo "${{ secrets.SSH_KEY }}" > ~/deploy_key && chmod 400 ~/deploy_key
         working-directory: .
       - name: Deploy files
-        run: rsync -Pavz -e "ssh -i ~/deploy_key -o StrictHostKeyChecking=no" front-end-build/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_SERVER }}:/home/pokedexmmi/www/
+        run: rsync -Pavz --delete -e "ssh -i ~/deploy_key -o StrictHostKeyChecking=no" "${{ github.workspace }}/front-end-build/" ${{ secrets.SSH_USER }}@${{ secrets.SSH_SERVER }}:/home/pokedexmmi/www/
         working-directory: .
