@@ -82,6 +82,7 @@ jobs:
           RewriteRule ^upload/?$ backend.php?action=upload [L,QSA]
           RewriteRule ^uploads/list/?$ backend.php?action=list [L,QSA]
           RewriteRule ^uploads/game-covers/?$ backend.php?action=covers [L,QSA]
+          RewriteRule ^github/contributors/?$ backend.php?action=contributors [L,QSA]
           EOF
       - name: Generate artifact
         uses: actions/upload-artifact@v4

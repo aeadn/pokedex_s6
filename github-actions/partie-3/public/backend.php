@@ -57,6 +57,42 @@ function imageFiles(string $directory): array
     ));
 }
 
+function fetchJson(string $url): ?array
+{
+    $headers = [
+        'Accept: application/vnd.github+json',
+        'User-Agent: pokedex-s6',
+        'X-GitHub-Api-Version: 2022-11-28',
+    ];
+
+    if (function_exists('curl_init')) {
+        $curl = curl_init($url);
+        curl_setopt_array($curl, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER => $headers,
+            CURLOPT_TIMEOUT => 10,
+        ]);
+        $body = curl_exec($curl);
+        $status = (int) curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
+        unset($curl);
+    } else {
+        $context = stream_context_create(['http' => [
+            'header' => implode("\r\n", $headers),
+            'ignore_errors' => true,
+            'timeout' => 10,
+        ]]);
+        $body = @file_get_contents($url, false, $context);
+        $status = 200;
+    }
+
+    if (!is_string($body) || $status < 200 || $status >= 300) {
+        return null;
+    }
+
+    $data = json_decode($body, true);
+    return is_array($data) ? $data : null;
+}
+
 $action = $_GET['action'] ?? '';
 
 if ($action === 'games') {
@@ -86,6 +122,20 @@ if ($action === 'covers') {
         }
     }
     respond($covers);
+}
+
+if ($action === 'contributors') {
+    $contributors = fetchJson('https://api.github.com/repos/aeadn/pokedex_s6/contributors?per_page=100');
+    if ($contributors === null) {
+        respond(['error' => 'Impossible de charger les contributeurs GitHub.'], 502);
+    }
+
+    respond(array_map(static fn (array $contributor): array => [
+        'login' => $contributor['login'] ?? '',
+        'name' => null,
+        'avatar_url' => $contributor['avatar_url'] ?? '',
+        'html_url' => $contributor['html_url'] ?? '',
+    ], $contributors));
 }
 
 if ($action === 'upload' && $_SERVER['REQUEST_METHOD'] === 'POST') {

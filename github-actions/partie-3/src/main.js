@@ -50,7 +50,13 @@ const loadGithubContributors = async () => {
     }
 
     try {
-        const response = await fetch("/github/contributors");
+        let response = await fetch("/github/contributors");
+
+        if (!response.ok) {
+            response = await fetch("https://api.github.com/repos/aeadn/pokedex_s6/contributors?per_page=100", {
+                headers: { Accept: "application/vnd.github+json" },
+            });
+        }
 
         if (!response.ok) {
             throw new Error(`GitHub API error ${response.status}`);
@@ -79,7 +85,7 @@ const loadGithubContributors = async () => {
 
                     <div class="flex flex-col">
                         <span class="text-sm font-medium">
-                            ${contributor.name || "Nom non renseigné"}
+                            ${contributor.name || contributor.login}
                         </span>
 
                         <span class="text-xs text-slate-500">
