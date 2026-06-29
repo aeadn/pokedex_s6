@@ -68,12 +68,20 @@ jobs:
           echo "VITE_BUILD_AUTHOR=${{ github.actor }}" >> "$GITHUB_ENV"
       - name: Create build
         run: npm run build
+      - name: Add initial game covers
+        run: mkdir -p dist/uploads && cp server/uploads/* dist/uploads/
       - name: Protect env files
         run: |
           cat > dist/.htaccess <<'EOF'
           <FilesMatch "^\.env">
               Require all denied
           </FilesMatch>
+
+          RewriteEngine On
+          RewriteRule ^games/?$ backend.php?action=games [L,QSA]
+          RewriteRule ^upload/?$ backend.php?action=upload [L,QSA]
+          RewriteRule ^uploads/list/?$ backend.php?action=list [L,QSA]
+          RewriteRule ^uploads/game-covers/?$ backend.php?action=covers [L,QSA]
           EOF
       - name: Generate artifact
         uses: actions/upload-artifact@v4
@@ -103,6 +111,9 @@ jobs:
       - name: Configure SSH key
         run: echo "${{ secrets.SSH_KEY }}" > ~/deploy_key && chmod 400 ~/deploy_key
         working-directory: .
+      - name: Upload initial game covers without deleting uploaded files
+        run: rsync -Pavz --ignore-existing -e "ssh -i ~/deploy_key -o StrictHostKeyChecking=no" "${{ github.workspace }}/github-actions/partie-3/dist/uploads/" ${{ secrets.SSH_USER }}@${{ secrets.SSH_SERVER }}:/home/pokedexmmi/www/uploads/
+        working-directory: .
       - name: Deploy files
-        run: rsync -Pavz --delete -e "ssh -i ~/deploy_key -o StrictHostKeyChecking=no" "${{ github.workspace }}/github-actions/partie-3/dist/" ${{ secrets.SSH_USER }}@${{ secrets.SSH_SERVER }}:/home/pokedexmmi/www/
+        run: rsync -Pavz --delete --exclude 'uploads/' -e "ssh -i ~/deploy_key -o StrictHostKeyChecking=no" "${{ github.workspace }}/github-actions/partie-3/dist/" ${{ secrets.SSH_USER }}@${{ secrets.SSH_SERVER }}:/home/pokedexmmi/www/
         working-directory: .

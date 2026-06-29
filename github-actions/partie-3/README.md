@@ -1,137 +1,43 @@
-# Pokédex v2025.0.0 - TP CI/CD
+# Liens
 
-## Description
-Application web Pokédex responsive développée avec Vite, Tailwind CSS et JavaScript moderne. Permet de consulter les informations détaillées des Pokémon avec une interface moderne et fluide.
+- Projet GitHub : https://github.com/aeadn/pokedex_s6
+- Site déployé : https://pokedexmmi.alwaysdata.net
 
-## URLs
-- **URL du projet sur GitHub** : [À définir après mise en ligne]
-- **URL du site déployé** : [À définir après déploiement]
+## Installation
 
-## Installation et mise en place
+Prérequis : Node.js 18 ou une version plus récente, npm et Git.
 
-### Prérequis
-- Node.js (version 18+)
-- npm ou yarn
-- Git
-
-### Installation
 ```bash
-# Cloner le repository
-git clone [URL_DU_REPO]
-cd pokedex-ci-cd
-
-# Installer les dépendances
+git clone https://github.com/aeadn/pokedex_s6.git
+cd pokedex_s6/github-actions/partie-3
 npm install
-
-# Démarrer le serveur de développement
-npm run dev
-
-# Construire pour la production
-npm run build
-
-# Prévisualiser la version de production
-npm run preview
 ```
 
-### Configuration
-Créer un fichier `.env.local` à la racine du projet avec :
+Créer un fichier `.env.local` à partir de `.env.example` :
+
 ```env
 GITHUB_TOKEN=votre_token_github
-GITHUB_REPO=owner/repository
+GITHUB_REPO=aeadn/pokedex_s6
 ```
 
-### Schéma de base de données
-L'application utilise des APIs externes et ne nécessite pas de base de données locale.
+Le token GitHub est confidentiel et ne doit jamais être envoyé sur le dépôt.
 
-### Template de fichier d'environnement
-```env
-# Copier ce contenu dans .env.local
-GITHUB_TOKEN=remplacez_par_votre_token
-GITHUB_REPO=votre-username/votre-repo
+## Lancement
+
+```bash
+npm run dev
 ```
 
-## Accès local (développement)
+- Site : http://localhost:5173
+- Administration des jaquettes : http://localhost:5173/administration.html
+- Serveur backend : http://localhost:3000
 
-Une fois `npm run dev` lancé depuis `github-actions/partie-3` :
+## Tests et production
 
-- Frontend (Vite) : http://localhost:5173/
-- Page d'administration (gestion des jaquettes) : http://localhost:5173/administration.html
-- Backend d'uploads : http://localhost:3000 (API utilisée par la page d'administration)
-
-La configuration Vite proxie les routes `/upload`, `/games`, `/uploads` et `/github` vers le serveur d'uploads `http://localhost:3000`.
-
-## Correction appliquée
-
-J'ai corrigé un problème où le clic sur le bouton "Charger la génération suivante" provoquait parfois le chargement en double de la même génération. La gestion des événements a été unifiée :
-
-- le bouton global du footer (sans `data-load-generation`) charge la génération suivante automatiquement,
-- les boutons générés avec `data-load-generation="<num>"` chargent la génération spécifiée.
-
-Le correctif est dans : `src/main.js`.
-
-## Fonctionnalités implémentées
-
-### Front-end
-- ✅ Affichage des Pokémon par génération
-- ✅ Mode grille/liste responsive
-- ✅ Modal détaillée avec informations complètes
-- ✅ Navigation entre Pokémon (précédent/suivant)
-- ✅ Chargement des données du Pokédex lié au Pokémon affiché
-- ✅ Noms étrangers des Pokémon (anglais et japonais)
-- ✅ Lien vers la fiche poképedia.fr
-- ✅ Changement dynamique du favicon
-- ✅ Affichage des types en mode liste uniquement
-- ✅ Numéros de Pokédex par région
-- ✅ Changement de la couleur theme-color
-- ✅ Cartes TCGdex françaises
-- ✅ Spectre sonore du cri avec WaveSurfer.js
-- ✅ Liste des contributeurs GitHub
-
-### Crédits et ressources externes
-
-#### APIs utilisées
-- **Tyradex** (https://tyradex.app/) - Données principales des Pokémon
-- **PokeAPI** (https://pokeapi.co/) - Données supplémentaires et sprites
-- **TCGdex** (https://tcgdex.dev/) - Cartes Pokémon françaises
-
-#### Icônes
-- **Pokemon Type Icons** (https://github.com/partywhale/pokemon-type-icons) - Icônes des types
-
-#### Librairies JavaScript
-- **WaveSurfer.js** - Spectre audio des cris de Pokémon
-- **Axios** - Requêtes HTTP
-- **Core-js** - Polyfills JavaScript
-
-#### Logos universitaires
-- Université de [Nom] - Année universitaire 2025-2026
-
-## Technologies utilisées
-- **Vite** - Outil de build et serveur de développement
-- **Tailwind CSS v4** - Framework CSS utilitaire
-- **JavaScript ES6+** - Langage de programmation
-- **HTML5** - Structure sémantique
-- **CSS3** - Styles avancés avec propriétés personnalisées
-
-## Structure du projet
-```
-src/
-├── api/           # Modules API (PokeAPI, Tyradex)
-├── styles/        # Styles CSS et propriétés
-├── utils/         # Utilitaires et constantes
-├── main.js        # Point d'entrée principal
-├── pokemon-modal.js # Gestion de la modal
-├── index.html     # Template HTML principal
-└── ...
+```bash
+npm run lint
+npm test -- --run
+npm run build
 ```
 
-## Scripts disponibles
-- `npm run dev` - Serveur de développement
-- `npm run build` - Build de production
-- `npm run preview` - Prévisualisation du build
-- `npm run lint` - Vérification du code avec ESLint
 
-## Déploiement
-L'application est configurée pour le déploiement via GitHub Actions avec rsync vers un serveur distant.
-
-## Contributeurs
-Voir la section "Contributeurs GitHub" dans l'application pour la liste des membres de l'équipe.

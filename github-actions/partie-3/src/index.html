@@ -7,7 +7,7 @@
         <meta name="format-detection" content="telephone=no">
         <meta name="theme-color" content="#0f172a" />
 
-        <title>Pokédex v%VERSION%</title>
+        <title>Pokédex 2026</title>
         <script type="module" src="/src/main.js"></script>
         <link data-favicon rel="shortcut icon" href="/favicon.png" type="image/png">
     </head>
@@ -26,7 +26,7 @@
         <header class="py-2 bg-slate-900 text-white">
             <div class="mr-[max(env(safe-area-inset-right),_theme(space.3))] ml-[max(env(safe-area-inset-left),_theme(space.3))]">
                 <div class="mx-auto max-w-6xl flex justify-between items-center">
-                    <h1>Pokédex v%VERSION% - TP CI/CD</h1>
+                    <h1>Pokédex 2026 - TP CI/CD</h1>
                     <a href="/administration.html" class="px-3 py-2 bg-slate-700 hover:bg-slate-600 rounded-md text-sm">Administration</a>
                 </div>
             </div>
@@ -62,6 +62,16 @@
         <div data-pip-enabled hidden class="picture-in-picture:opacity-0 fixed bottom-3 left-1/2 -translate-x-1/2 bg-gray-800 text-white py-0.5 px-1.5 rounded-md text-sm">
             <p>Mode picture-in-picture activé</p>
         </div>
+        <div class="mx-auto max-w-6xl px-4">
+            <button
+                data-testid="load-generation-btn"
+                data-load-generation
+                class="inert:opacity-35 block transition-colors rounded-md w-full my-4 p-2 border border-black border-solid hocus:bg-white hocus:text-black bg-slate-950 text-white"
+            >
+                Charger la génération suivante
+            </button>
+        </div>
+
         <footer class="pr-[max(env(safe-area-inset-right),_theme(space.2))] pl-[max(env(safe-area-inset-left),_theme(space.2))]">
             <div class="mx-auto max-w-6xl py-4 border-t border-slate-300">
                 <div class="text-center text-sm text-slate-600 space-y-2">
@@ -98,13 +108,6 @@
                 </div>
             </div>
 
-            <button
-                data-testid="load-generation-btn"
-                data-load-generation
-                class="inert:opacity-35 block transition-colors rounded-md w-full my-4 p-2 border border-black border-solid hocus:bg-white hocus:text-black bg-slate-950 text-white"
-            >
-                Charger la génération suivante
-            </button>
         </footer>
 
         <template data-tpl-id="generation-shortcut-link">
