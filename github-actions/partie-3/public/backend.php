@@ -64,6 +64,10 @@ function fetchJson(string $url): ?array
         'User-Agent: pokedex-s6',
         'X-GitHub-Api-Version: 2022-11-28',
     ];
+    $token = getenv('GITHUB_TOKEN');
+    if ($token) {
+        $headers[] = 'Authorization: Bearer ' . $token;
+    }
 
     if (function_exists('curl_init')) {
         $curl = curl_init($url);
@@ -125,17 +129,24 @@ if ($action === 'covers') {
 }
 
 if ($action === 'contributors') {
-    $contributors = fetchJson('https://api.github.com/repos/aeadn/pokedex_s6/contributors?per_page=100');
+    $resource = getenv('GITHUB_TOKEN') ? 'collaborators' : 'contributors';
+    $contributors = fetchJson('https://api.github.com/repos/aeadn/pokedex_s6/' . $resource . '?per_page=100');
     if ($contributors === null) {
         respond(['error' => 'Impossible de charger les contributeurs GitHub.'], 502);
     }
 
-    respond(array_map(static fn (array $contributor): array => [
-        'login' => $contributor['login'] ?? '',
-        'name' => null,
-        'avatar_url' => $contributor['avatar_url'] ?? '',
-        'html_url' => $contributor['html_url'] ?? '',
-    ], $contributors));
+    $profiles = [];
+    foreach ($contributors as $contributor) {
+        $profile = isset($contributor['url']) ? fetchJson($contributor['url']) : null;
+        $profiles[] = [
+            'login' => $contributor['login'] ?? '',
+            'name' => $profile['name'] ?? null,
+            'avatar_url' => $contributor['avatar_url'] ?? '',
+            'html_url' => $contributor['html_url'] ?? '',
+        ];
+    }
+
+    respond($profiles);
 }
 
 if ($action === 'upload' && $_SERVER['REQUEST_METHOD'] === 'POST') {

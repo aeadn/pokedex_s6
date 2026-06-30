@@ -275,6 +275,10 @@ const generateMarqueeTypes = (e) => {
 }
 
 const loadPokedexForGeneration = async (generation = 1, triggerElement) => {
+    if (document.querySelector(`[data-header-pokedex="${generation}"]`)) {
+        return;
+    }
+
     const listLoadGenerationBtns = document.querySelectorAll("[data-load-generation]");
 
     try {

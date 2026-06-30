@@ -405,6 +405,11 @@ const loadDetailsModal = async (e, region = null) => {
 };
 
 displayModal = async (pkmnData) => {
+    if (!modal.open) {
+        previousThemeColor = themeColorMeta?.content;
+        previousFaviconHref = faviconElement?.href;
+    }
+
     modal.inert = true;
     modal.setAttribute("aria-busy", true);
     loadGenerationBtn.inert = true;
@@ -510,13 +515,11 @@ displayModal = async (pkmnData) => {
     replaceImage(modal_DOM.img, pkmnData.sprites.regular);
     modal_DOM.img.alt = `sprite de ${pkmnData.name.fr}`;
 
-    modal.setAttribute("aria-labelledby", `Fiche détail de ${pkmnData.name.fr}`);
-
     modal_DOM.pkmnName.textContent = `#${String(pkmnData.pokedex_id).padStart(NB_NUMBER_INTEGERS_PKMN_ID, '0')} ${pkmnData.name.fr}`;
     document.title = `${modal_DOM.pkmnName.textContent} - ${initialPageTitle}`;
 
     if (modal_DOM.foreignNames) {
-        modal_DOM.foreignNames.textContent = `EN: ${pkmnData.name.en || "-"} • JP: ${pkmnData.name.jp || "-"}`;
+        modal_DOM.foreignNames.textContent = `Anglais : ${pkmnData.name.en || "-"} • Japonais : ${pkmnData.name.jp || "-"}`;
     }
 
     if (modal_DOM.pokepediaLink) {
@@ -990,7 +993,7 @@ displayModal = async (pkmnData) => {
             // Image de la carte TCGDex
             img.src = card.image ? `${card.image}/low.webp` : "";
             img.alt = card.name || "Carte Pokémon";
-            img.className = "w-full h-28 object-cover";
+            img.className = "w-full aspect-[5/7] object-contain bg-slate-50";
 
             const label = document.createElement("p");
             label.textContent = card.name || "Carte";

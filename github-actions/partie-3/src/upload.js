@@ -6,6 +6,7 @@ async function fetchUploadedFiles() {
 
   try {
     const res = await fetch(`${API_BASE}/uploads/list`);
+    if (!res.ok) throw new Error(`Status ${res.status}`);
     const files = await res.json();
     if (!Array.isArray(files) || files.length === 0) {
       list.innerHTML = `<li class="text-slate-600">Aucune jaquette uploadée pour l'instant.</li>`;
@@ -32,6 +33,7 @@ async function initUpload() {
 
   try {
     const res = await fetch(`${API_BASE}/games`);
+    if (!res.ok) throw new Error(`Status ${res.status}`);
     const games = await res.json();
     games.forEach((g) => {
       const opt = document.createElement("option");
@@ -67,7 +69,7 @@ async function initUpload() {
         select.value = "";
         await fetchUploadedFiles();
       } else {
-        status.textContent = `Erreur: ${data.error || 'unknown'}`;
+        status.textContent = `Erreur : ${data.error || "une erreur est survenue"}`;
       }
     } catch (err) {
       console.error(err);

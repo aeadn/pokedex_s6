@@ -1,41 +1,74 @@
-## Installation et mise en place
-npm install dans partie-3
+# Pokédex - semestre 6
 
-### Prérequis
-- Node.js (version 18+)
-- npm
-- Git
+Projet réalisé en groupe pour le semestre 6 du BUT MMI.
 
-- Frontend (Vite) : http://localhost:5173/
-- Page d'administration (gestion des jaquettes) : http://localhost:5173/administration.html
-- Backend d'uploads : http://localhost:3000 (API utilisée par la page d'administration)
-- Lien du site https://aeadn.github.io/pokedex_s6/
-La configuration Vite proxie les routes `/upload`, `/games`, `/uploads` et `/github` vers le serveur d'uploads `http://localhost:3000`.
+## Liens
 
+- GitHub : https://github.com/aeadn/pokedex_s6
+- Site en ligne : https://pokedexmmi.alwaysdata.net
 
-### Crédits et ressources externes
+## Installation
 
-#### APIs utilisées
-- **Tyradex** (https://tyradex.app/) - Données principales des Pokémon
-- **PokeAPI** (https://pokeapi.co/) - Données supplémentaires et sprites
-- **TCGdex** (https://tcgdex.dev/) - Cartes Pokémon françaises
+Il faut avoir Git, Node.js 22 et npm sur son ordinateur.
 
-## Structure du projet
-```
-src/
-├── api/           # Modules API (PokeAPI, Tyradex)
-├── styles/        # Styles CSS et propriétés
-├── utils/         # Utilitaires et constantes
-├── main.js        # Point d'entrée principal
-├── pokemon-modal.js # Gestion de la modal
-├── index.html     # Template HTML principal
-└── ...
+```bash
+git clone https://github.com/aeadn/pokedex_s6.git
+cd pokedex_s6/github-actions/partie-3
+npm install
 ```
 
-## Scripts disponibles
-- `npm run dev` - Serveur de développement
-- `npm run build` - Build de production
-- `npm run preview` - Prévisualisation du build
-- `npm run lint` - Vérification du code avec ESLint
+Il n'y a pas de base de données pour ce projet. Les jaquettes sont enregistrées dans un dossier sur le serveur.
 
-Abby Joumana Marcell
+## Fichier d'environnement
+
+Il faut copier le fichier d'exemple :
+
+```bash
+cp .env.example .env.local
+```
+
+Puis remplir les deux variables :
+
+```env
+GITHUB_TOKEN=votre_token_github
+GITHUB_REPO=aeadn/pokedex_s6
+```
+
+Le token est utilisé uniquement par le serveur pour appeler l'API GitHub. Il ne faut pas l'ajouter dans Git. Le fichier `.env.local` est déjà ignoré par le `.gitignore`.
+
+Sur Alwaysdata, `GITHUB_TOKEN` doit être ajouté dans les variables d'environnement du site.
+
+## Lancer le projet
+
+```bash
+npm run dev
+```
+
+- Pokédex : http://localhost:5173
+- Administration : http://localhost:5173/administration.html
+- Backend : http://localhost:3000
+
+## Tests et build
+
+```bash
+npm run lint
+npm test -- --run
+npm run build
+```
+
+Le workflow GitHub Actions teste le projet et le déploie sur Alwaysdata après un push sur `main`.
+
+## Ressources utilisées
+
+- TyraDex
+- PokéAPI
+- TCGdex
+- API GitHub
+- Pokemon Type Icons
+- WaveSurfer.js
+
+## Groupe
+
+- aeadn
+- JoumanaL
+- estban000

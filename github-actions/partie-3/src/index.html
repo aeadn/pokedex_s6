@@ -86,7 +86,7 @@
                     <div class="space-y-1">
                         <p class="font-semibold">APIs utilisées :</p>
                         <ul class="space-y-1">
-                            <li><a href="https://tyradex.app/" target="_blank" rel="noopener noreferrer" class="text-blue-700 underline hover:text-blue-900">Tyradex</a> - Données principales des Pokémon</li>
+                            <li><a href="https://tyradex.vercel.app/" target="_blank" rel="noopener noreferrer" class="text-blue-700 underline hover:text-blue-900">TyraDex</a> - Données principales des Pokémon</li>
                             <li><a href="https://pokeapi.co/" target="_blank" rel="noopener noreferrer" class="text-blue-700 underline hover:text-blue-900">PokeAPI</a> - Données supplémentaires et sprites</li>
                             <li><a href="https://tcgdex.dev/" target="_blank" rel="noopener noreferrer" class="text-blue-700 underline hover:text-blue-900">TCGdex</a> - Cartes Pokémon françaises</li>
                         </ul>
@@ -160,7 +160,7 @@
                         </svg>
 
                         <label class="inline-flex items-center cursor-pointer col-span-2" data-testid="switch-layout">
-                            <input type="checkbox" value="" class="sr-only peer switch-checkbox" data-layout-switch>
+                            <input type="checkbox" value="" aria-label="Basculer entre l'affichage en grille et en liste" class="sr-only peer switch-checkbox" data-layout-switch>
                             <div class="switch relative w-14 h-8 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 peer-checked:after:start-[-2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-7 after:w-7 peer-checked:bg-blue-600"></div>
                         </label>
 
@@ -256,7 +256,7 @@
         <dialog
             data-pokemon-modal
             data-pokemon-data
-            aria-labelledby="placeholder"
+            aria-labelledby="pokemon-modal-title"
             data-testid="pokemon-modal"
             class="picture-in-picture:mt-0 group-foo:opacity-0 pkmn-details-dialog backdrop:backdrop-blur-(--details-modal-blur) backdrop:bg-slate-400/50 overscroll-y-contain bg-white rounded-lg my-4 md:my-8 w-11/12 sm:max-w-4xl border-2 border-solid mx-auto"
         >
@@ -274,7 +274,7 @@
                             <img data-sprite src="/images/loading.svg" alt="" fetchpriority="high" />
                         </div>
                         <div class="grow">
-                            <h2 class="text-2xl font-bold"></h2>
+                            <h2 id="pokemon-modal-title" class="text-2xl font-bold"></h2>
                             <p data-category class="text-sm -mt-1"></p>
                             <p data-foreign-names class="text-xs mt-1 text-slate-600"></p>
                             <p data-pokepedia-link class="text-xs mt-1"></p>

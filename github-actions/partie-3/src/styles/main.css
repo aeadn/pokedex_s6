@@ -383,11 +383,6 @@ details {
         width: 100%;
         background: var(--bg-modal-color);
         transition: --bg-modal-color var(--animation-speed) 0.3s ease-out;
-
-        @starting-style {
-            --bg-modal-color: white;
-            background: var(--bg-modal-color);
-        }
     }
 
     &::after {
@@ -498,6 +493,14 @@ details {
     }
     100% {
         color: #da9100;
+    }
+}
+
+@starting-style {
+    .modal-footer::after,
+    .modal-footer::before {
+        --bg-modal-color: white;
+        background: var(--bg-modal-color);
     }
 }
 

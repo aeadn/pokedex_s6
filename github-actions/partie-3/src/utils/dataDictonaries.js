@@ -414,5 +414,4 @@ export const FRENCH_GAMES_NAME = {
     "legends-arceus": "Légendes Pokémon : Arceus",
     "brilliant-diamond": "Pokémon Diamant Étincelant",
     "shining-pearl": "Pokémon Perle Scintillante",
-    "original-unova": "Unys",
 };

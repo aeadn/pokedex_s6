@@ -11,11 +11,23 @@ const __dirname = path.dirname(__filename);
 const uploadDir = path.join(__dirname, "uploads");
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
+const imageExtensions = {
+  "image/jpeg": ".jpg",
+  "image/png": ".png",
+  "image/gif": ".gif",
+  "image/webp": ".webp",
+  "image/avif": ".avif",
+};
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, uploadDir),
   filename: (req, file, cb) => {
     const game = (req.body.game || "unknown").toString();
-    const ext = path.extname(file.originalname).toLowerCase();
+    const ext = imageExtensions[file.mimetype];
+    if (!Object.hasOwn(FRENCH_GAMES_NAME, game) || !ext) {
+      cb(new Error("Jeu ou image invalide."));
+      return;
+    }
     const filename = `${sanitizeFilename(game)}${ext}`;
     cb(null, filename);
   },
@@ -52,6 +64,7 @@ app.get("/games", (req, res) => {
 
 app.get("/github/contributors", async (_req, res) => {
   const repo = process.env.GITHUB_REPO || "aeadn/pokedex_s6";
+  const resource = process.env.GITHUB_TOKEN ? "collaborators" : "contributors";
   const headers = {
     Accept: "application/vnd.github+json",
     "User-Agent": "pokedex-s6",
@@ -62,7 +75,7 @@ app.get("/github/contributors", async (_req, res) => {
   }
 
   try {
-    const response = await fetch(`https://api.github.com/repos/${repo}/contributors?per_page=100`, { headers });
+    const response = await fetch(`https://api.github.com/repos/${repo}/${resource}?per_page=100`, { headers });
     if (!response.ok) {
       return res.status(response.status).json({ error: "Impossible de charger les contributeurs GitHub." });
     }
@@ -86,9 +99,25 @@ app.get("/github/contributors", async (_req, res) => {
   }
 });
 
-app.post("/upload", upload.single("cover"), (req, res) => {
-  if (!req.file) return res.status(400).json({ error: "No file uploaded" });
-  res.json({ ok: true, filename: req.file.filename, path: `/uploads/${req.file.filename}` });
+app.post("/upload", (req, res) => {
+  upload.single("cover")(req, res, (error) => {
+    if (error || !req.file) {
+      return res.status(400).json({ error: "Le jeu ou le fichier image est invalide." });
+    }
+
+    const game = req.body.game.toString();
+    const oldNames = [sanitizeFilename(game), GAME_COVER_FILE_BASES[game]].filter(Boolean);
+    const files = fs.readdirSync(uploadDir);
+
+    files.forEach((filename) => {
+      const isOldCover = oldNames.includes(path.parse(filename).name);
+      if (isOldCover && filename !== req.file.filename) {
+        fs.unlinkSync(path.join(uploadDir, filename));
+      }
+    });
+
+    return res.json({ ok: true, filename: req.file.filename, path: `/uploads/${req.file.filename}` });
+  });
 });
 
 app.get("/uploads/list", (req, res) => {
