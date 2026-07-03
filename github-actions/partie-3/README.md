@@ -1,11 +1,12 @@
-# Liens
 
-- Projet GitHub : https://github.com/aeadn/pokedex_s6
-- Site déployé : https://pokedexmmi.alwaysdata.net
+## Liens
 
-## Installation
+- GitHub : https://github.com/aeadn/pokedex_s6
+- Site : https://pokedexmmi.alwaysdata.net
 
-Prérequis : Node.js 22, npm et Git. Il n'y a pas de base de données.
+## Installer le projet
+
+Il faut avoir Node.js 22, npm et Git.
 
 ```bash
 git clone https://github.com/aeadn/pokedex_s6.git
@@ -13,33 +14,35 @@ cd pokedex_s6/github-actions/partie-3
 npm install
 ```
 
-Créer un fichier `.env.local` à partir de `.env.example` :
+Le projet n'utiise pas de base de données.
+
+## Fichier `.env.local`
+
+Copier le fichier d'exemple :
 
 ```bash
 cp .env.example .env.local
 ```
 
-Puis renseigner :
+Puis ajouter son token GitHub :
 
 ```env
 GITHUB_TOKEN=votre_token_github
 GITHUB_REPO=aeadn/pokedex_s6
 ```
+Le token GitHub est privé et ne doit pas être ajouté au dépôt.
 
-Le token sert au serveur pour récupérer les collaborateurs GitHub. Il ne faut pas le mettre sur le dépôt.
-Sur Alwaysdata, `GITHUB_TOKEN` doit être ajouté dans les variables d'environnement du site.
-
-## Lancement
+## Lancer le projet
 
 ```bash
 npm run dev
 ```
 
-- Site : http://localhost:5173
-- Administration des jaquettes : http://localhost:5173/administration.html
-- Serveur backend : http://localhost:3000
+- Pokédex : http://localhost:5173
+- Administration : http://localhost:5173/administration.html
+- Backend : http://localhost:3000
 
-## Tests et production
+## Commandes utiles
 
 ```bash
 npm run lint
