@@ -1,7 +1,7 @@
 {
     "name": "pokedex-ci-cd",
     "private": true,
-    "version": "2025.0.0",
+    "version": "1.0.0",
     "type": "module",
     "scripts": {
         "dev": "concurrently \"node --env-file-if-exists=.env.local server/index.js\" \"vite\"",
